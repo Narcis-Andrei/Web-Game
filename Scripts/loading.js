@@ -1,15 +1,45 @@
-// Simulate asset loading with a delay
-function loadGameAssets() {
-    // Replace this timeout with actual asset loading logic as needed
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            console.log("Game assets loaded."); // Placeholder for loading completion
-            resolve(); // Resolve the promise after loading is complete
-        }, 3000); // Simulate a 3-second loading delay
+// List of game assets to preload
+const assets = [
+    // More assets here
+];
+
+let assetsLoaded = 0;
+const totalAssets = assets.length;
+
+// Function to load an image
+function loadImage(src) {
+    //An object representing the eventual completion or failure of the next operation
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.src = src;
+        img.onload = () => {
+            assetsLoaded++;
+            updateLoadingProgress();
+            resolve();
+        };
+        img.onerror = reject;
     });
 }
 
-// After assets are loaded, redirect to game.html
-loadGameAssets().then(() => {
-    window.location.href = "game.html"; // Redirect to the game page
+// Function to update progress (optional)
+function updateLoadingProgress() {
+    const loadingText = document.getElementById("loading-text");
+    loadingText.textContent = "Loading game assets: ${assetsLoaded}/${totalAssets}...";
+}
+
+// Load all assets and redirect when done
+async function loadGameAssets() {
+    // Show initial progress
+    updateLoadingProgress();
+
+    // Load each asset and wait for all to complete
+    await Promise.all(assets.map(asset => loadImage(asset)));
+
+    // Redirect to the game page once all assets are loaded
+    window.location.href = "game.html";
+}
+
+// Start loading assets
+loadGameAssets().catch(error => {
+    console.error("Error loading assets:", error);
 });
