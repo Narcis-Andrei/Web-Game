@@ -23,15 +23,17 @@ let panda, runningModel, jumpingModel, mixer;
 const playerCenterDistance = 1; // Adjusted distance to ground level
 
 // Load the Panda Model (the character model)
-loader.load("Panda.glb", (gltf) => {
+loader.load
+"Panda.glb", (gltf) => {
     panda = gltf.scene;
     panda.scale.set(2.5, 2.5, 2.5);
     panda.position.set(0, playerCenterDistance, 0);
     scene.add(panda);
-}, undefined, (error) => console.error("Error loading Panda model:", error));
+}, undefined, (error) => console.error("Error loading Panda model:", error);
 
-// Load the Running Animation
-loader.load("Running.glb", (gltf) => {
+/// Load the Running Animation
+loader.load
+"Running.glb", (gltf) => {
     runningModel = gltf.scene;
     runningModel.scale.set(2.5, 2.5, 2.5);
     runningModel.position.set(0, playerCenterDistance, 0);
@@ -43,10 +45,11 @@ loader.load("Running.glb", (gltf) => {
     const runAction = mixer.clipAction(gltf.animations[0]);
     runAction.loop = THREE.LoopRepeat;
     runAction.play();
-}, undefined, (error) => console.error("Error loading Running animation:", error));
+}, undefined, (error) => console.error("Error loading Running animation:", error);
 
 // Load the Jumping Animation
-loader.load("Jump.glb", (gltf) => {
+loader.load
+"Jump.glb", (gltf) => {
     jumpingModel = gltf.scene;
     jumpingModel.scale.set(2.5, 2.5, 2.5);
     jumpingModel.position.set(0, playerCenterDistance, 0);
@@ -59,7 +62,7 @@ loader.load("Jump.glb", (gltf) => {
     jumpAction.loop = THREE.LoopOnce;
     jumpAction.clampWhenFinished = true;
     jumpAction.play();
-}, undefined, (error) => console.error("Error loading Jumping animation:", error));
+}, undefined, (error) => console.error("Error loading Jumping animation:", error);
 
 // Gravity, Jump Variables, and Player Movement
 const gravity = -0.05;
