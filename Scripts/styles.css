@@ -1,0 +1,212 @@
+/*Home Page*/
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(180deg, #8b00ff, #e100ff);
+    margin: 0;
+}
+
+.home-container {
+    text-align: center;
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+}
+
+h1 {
+    margin-bottom: 20px;
+    color: #8b00ff;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+nav ul li {
+    margin: 10px 0;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #8b00ff;
+    font-size: 18px;
+}
+
+nav ul li a:hover {
+    text-decoration: underline;
+}
+
+a {
+    font-size: 18px;
+    color: #8b00ff;
+    text-decoration: none;
+}
+/*Home Page*/
+
+
+/*404 Page*/
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(180deg, #8b00ff, #e100ff);
+    margin: 0;
+}
+
+.error-container {
+    text-align: center;
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#Error {
+    font-size: 96px;
+    margin: 0;
+    color: #8b00ff;
+}
+
+#ErrorText {
+    font-size: 24px;
+    margin: 20px 0;
+    color: #333;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/*404 Page*/
+
+
+/*Log in page Page*/
+.login-container {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 300px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: left;
+}
+
+.options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+button:hover {
+    background: #7100cc;
+}
+
+.register {
+    margin-top: 20px;
+}
+
+.register a {
+    color: #8b00ff;
+    text-decoration: none;
+}
+
+.register a:hover {
+    text-decoration: underline;
+}
+/*Log in page Page*/
+
+
+/*Register Page*/
+.register-container {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 300px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: left;
+}
+
+.options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background: #8b00ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #7100cc;
+}
+
+.login {
+    margin-top: 20px;
+}
+
+.login a {
+    color: #8b00ff;
+    text-decoration: none;
+}
+
+.login a:hover {
+    text-decoration: underline;
+}
+/*Register Page*/
