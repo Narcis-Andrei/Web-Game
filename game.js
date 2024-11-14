@@ -75,34 +75,62 @@ loader.load("Jump.glb", (gltf) => {
 }, undefined, (error) => console.error("Error loading Jumping animation:", error));
 
 // Gravity, Jump Variables, and Player Movement
-const gravity = -0.155; // Increased gravity for faster falling
-const jumpForce = 4; // Reduced jump force for lower jumps
+const gravity = -0.02; // Increased gravity for faster falling
+const jumpForce = 0.5 ; // Reduced jump force for lower jumps
 let velocityY = 0;
 let isJumping = false;
 let jumpStartTime = 0; // Time when the jump starts
 const groundLevel = 1;
 
+// Pause menue
+let gamePaused = false;
+
 // Input Event Listener for Jump
 window.addEventListener('keydown', (event) => {
-    if (event.code === 'Space' && !isJumping) {
+    if (event.code === 'Space' && !isJumping && !gamePaused) {
         isJumping = true;
         velocityY = jumpForce;
-        jumpStartTime = performance.now(); // Record the jump start time
-
-        // Hide Running Model and Show Jumping Model
+        jumpStartTime = performance.now();
         runningModel.visible = false;
+
         jumpingModel.position.set(runningModel.position.x, runningModel.position.y, runningModel.position.z);
         jumpingModel.visible = true;
-
-        // Play Jump Animation
         jumpAction.reset().play();
+
+        // Log action
         console.log("Jump action played", jumpAction.isRunning());
 
         // Log visibility status
         console.log("Running Model Visible:", runningModel.visible);
         console.log("Jumping Model Visible:", jumpingModel.visible);
     }
+
+    if (event.code === 'Escape') {
+        gamePaused = !gamePaused;
+        togglePauseMenu();
+    }
 });
+
+// Toggle Pause Menu
+function goToHomePage() {
+    window.location.href = 'index.html';  // Navigate to index.html
+}
+
+// Toggle Pause Menu
+function togglePauseMenu() {
+    const pauseMenu = document.getElementById('pauseMenu');
+    const goToHomePageButton = document.getElementById('goToHomePageButton');
+    
+    if (gamePaused) {
+        pauseMenu.style.display = 'block';  // Show pause menu
+    } else {
+        pauseMenu.style.display = 'none';  // Hide pause menu
+        animate();  // Restart the game loop if resumed
+    }
+}
+
+// Add an event listener for the Go to Home Page button
+document.getElementById('goToHomePageButton').addEventListener('click', goToHomePage);
 
 // Check Landing Function
 function checkLanding() {
@@ -124,9 +152,27 @@ function checkLanding() {
     }
 }
 
+// Score Variables
+let score = 0;
+let scoreMultiplier = 0.0001;
+let lastScoreUpdateTime = performance.now();
+const scoreDisplay = document.getElementById("Score");
+
+// Health Variables
+let health = 100;
+const healthDisplay = document.getElementById("healthDisplay");
+
 // Animate Function - Game Loop
 function animate() {
+    if (gamePaused) return;
     requestAnimationFrame(animate);
+
+    // Update the score based on elapsed time
+    const currentTime = performance.now();
+    const deltaTime = (currentTime - lastScoreUpdateTime) / 1000; // Seconds since last update
+    score += deltaTime * scoreMultiplier * 0.2; 
+    scoreDisplay.innerText = `Score: ${Math.floor(score)}`; // Update displayed score
+    scoreMultiplier = deltaTime * 0.0005;
 
     // Update the animation mixer to play the animations
     if (mixer) {
@@ -138,8 +184,7 @@ function animate() {
 
     // Apply gravity and update player position
     if (isJumping) {
-        const currentTime = performance.now();
-        const elapsedTime = currentTime - jumpStartTime;
+        const elapsedTime = performance.now() - jumpStartTime;
 
         if (elapsedTime < 200) { // Allow some airtime before applying gravity
             velocityY += gravity;
@@ -161,10 +206,6 @@ function animate() {
         camera.position.x = runningModel.position.x + 12;
         camera.position.z = runningModel.position.z + 10;
         camera.position.y = runningModel.position.y + 2;
-    } else if (jumpingModel && jumpingModel.visible) {
-        camera.position.x = jumpingModel.position.x + 12;
-        camera.position.z = jumpingModel.position.z + 10;
-        camera.position.y = jumpingModel.position.y + 2;
     }
 
     // Render the scene
@@ -176,6 +217,26 @@ window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
     camera.updateProjectionMatrix();
 });
+
+// Adjust font size based on window size
+function adjustUITextSize() {
+    const baseFontSize = 1; // Base font size in vw (viewport width units)
+    const healthDisplay = document.getElementById("healthDisplay");
+    const scoreDisplay = document.getElementById("Score");
+
+    // Calculate new font size based on window width
+    const newFontSize = baseFontSize * (window.innerWidth / 1000); // Adjust multiplier as needed
+
+    // Set font size for both health and score displays
+    healthDisplay.style.fontSize = `${newFontSize}vw`;
+    scoreDisplay.style.fontSize = `${newFontSize}vw`;
+}
+
+// Call the function initially to set font size
+adjustUITextSize();
+
+// Adjust font size whenever the window is resized
+window.addEventListener('resize', adjustUITextSize);
 
 // Start the Game Loop
 animate();

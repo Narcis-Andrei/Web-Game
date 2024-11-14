@@ -5,7 +5,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: linear-gradient(180deg, #8b00ff, #e100ff);
+    background: linear-gradient(180deg, #00ffb3, #00ffaa);
     margin: 0;
 }
 
@@ -20,7 +20,7 @@ body {
 
 h1 {
     margin-bottom: 20px;
-    color: #8b00ff;
+    color: #00ff9d;
 }
 
 nav ul {
@@ -34,7 +34,7 @@ nav ul li {
 
 nav ul li a {
     text-decoration: none;
-    color: #8b00ff;
+    color: #00ff88;
     font-size: 18px;
 }
 
@@ -44,23 +44,13 @@ nav ul li a:hover {
 
 a {
     font-size: 18px;
-    color: #8b00ff;
+    color: #00ff9d;
     text-decoration: none;
 }
 /*Home Page*/
 
 
 /*404 Page*/
-body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: linear-gradient(180deg, #8b00ff, #e100ff);
-    margin: 0;
-}
-
 .error-container {
     text-align: center;
     background: white;
@@ -72,7 +62,7 @@ body {
 #Error {
     font-size: 96px;
     margin: 0;
-    color: #8b00ff;
+    color: #00ffb3;
 }
 
 #ErrorText {
@@ -127,7 +117,7 @@ a:hover {
 }
 
 button:hover {
-    background: #7100cc;
+    background: #00cc88;
 }
 
 .register {
@@ -135,7 +125,7 @@ button:hover {
 }
 
 .register a {
-    color: #8b00ff;
+    color: #00ffaa;
     text-decoration: none;
 }
 
@@ -186,7 +176,7 @@ button:hover {
 button {
     width: 100%;
     padding: 10px;
-    background: #8b00ff;
+    background: #00ffb3;
     color: white;
     border: none;
     border-radius: 5px;
@@ -194,7 +184,7 @@ button {
 }
 
 button:hover {
-    background: #7100cc;
+    background: #00cc88;
 }
 
 .login {
@@ -202,7 +192,7 @@ button:hover {
 }
 
 .login a {
-    color: #8b00ff;
+    color: #00ffb3;
     text-decoration: none;
 }
 
