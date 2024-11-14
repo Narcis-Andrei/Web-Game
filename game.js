@@ -41,7 +41,7 @@ createskybox();
 // Load the Running Animation
 loader.load("Running.glb", (gltf) => {
     runningModel = gltf.scene;
-    runningModel.scale.set(150, 150, 150); // Same scale as the previous Panda model
+    runningModel.scale.set(150, 150, 150); // Same scale as Jumping model
     runningModel.position.set(0, playerCenterDistance, 0);
     runningModel.rotation.y = Math.PI / 2; // Rotate 90 degrees to the right
     runningModel.visible = true; // Make sure running model is visible
@@ -53,6 +53,7 @@ loader.load("Running.glb", (gltf) => {
     runAction = mixer.clipAction(gltf.animations[0]);
     runAction.loop = THREE.LoopRepeat;
     runAction.play();
+    console.log("Running animation loaded");
 }, undefined, (error) => console.error("Error loading Running animation:", error));
 
 // Load the Jumping Animation
@@ -70,13 +71,15 @@ loader.load("Jump.glb", (gltf) => {
     jumpAction = jumpMixer.clipAction(gltf.animations[0]);
     jumpAction.loop = THREE.LoopOnce;
     jumpAction.clampWhenFinished = true;
+    console.log("Jumping animation loaded");
 }, undefined, (error) => console.error("Error loading Jumping animation:", error));
 
 // Gravity, Jump Variables, and Player Movement
-const gravity = -0.05;
-const jumpForce = 1;
+const gravity = -0.155; // Increased gravity for faster falling
+const jumpForce = 4; // Reduced jump force for lower jumps
 let velocityY = 0;
 let isJumping = false;
+let jumpStartTime = 0; // Time when the jump starts
 const groundLevel = 1;
 
 // Input Event Listener for Jump
@@ -84,6 +87,7 @@ window.addEventListener('keydown', (event) => {
     if (event.code === 'Space' && !isJumping) {
         isJumping = true;
         velocityY = jumpForce;
+        jumpStartTime = performance.now(); // Record the jump start time
 
         // Hide Running Model and Show Jumping Model
         runningModel.visible = false;
@@ -92,6 +96,11 @@ window.addEventListener('keydown', (event) => {
 
         // Play Jump Animation
         jumpAction.reset().play();
+        console.log("Jump action played", jumpAction.isRunning());
+
+        // Log visibility status
+        console.log("Running Model Visible:", runningModel.visible);
+        console.log("Jumping Model Visible:", jumpingModel.visible);
     }
 });
 
@@ -108,6 +117,10 @@ function checkLanding() {
 
         // Play Running Animation
         runAction.reset().play(); // Restart the running animation
+
+        console.log("Landed", runningModel.position.y);
+        console.log("Running Model Visible after landing:", runningModel.visible);
+        console.log("Jumping Model Visible after landing:", jumpingModel.visible);
     }
 }
 
@@ -125,22 +138,30 @@ function animate() {
 
     // Apply gravity and update player position
     if (isJumping) {
-        if (jumpingModel.position.y > groundLevel) {
+        const currentTime = performance.now();
+        const elapsedTime = currentTime - jumpStartTime;
+
+        if (elapsedTime < 200) { // Allow some airtime before applying gravity
             velocityY += gravity;
         } else {
-            jumpingModel.position.y = groundLevel;
-            checkLanding(); // Check if player has landed
+            velocityY = gravity;
         }
 
         jumpingModel.position.y += velocityY;
+
+        if (jumpingModel.position.y <= groundLevel) {
+            checkLanding();
+        }
+
+        console.log("Jumping", jumpingModel.position.y);
     }
 
     // Update camera position to follow the player
-    if (runningModel.visible) {
+    if (runningModel && runningModel.visible) {
         camera.position.x = runningModel.position.x + 12;
         camera.position.z = runningModel.position.z + 10;
         camera.position.y = runningModel.position.y + 2;
-    } else if (jumpingModel.visible) {
+    } else if (jumpingModel && jumpingModel.visible) {
         camera.position.x = jumpingModel.position.x + 12;
         camera.position.z = jumpingModel.position.z + 10;
         camera.position.y = jumpingModel.position.y + 2;
