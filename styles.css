@@ -23,6 +23,10 @@ h1 {
     color: #00ff9d;
 }
 
+p{
+    color: #00ff9d;
+}
+
 nav ul {
     list-style-type: none;
     padding: 0;
@@ -200,3 +204,37 @@ button:hover {
     text-decoration: underline;
 }
 /*Register Page*/
+
+/*Window Resize*/
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+    p {
+        font-size: 1rem;
+    }
+    nav ul li {
+        margin: 0 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .home-container {
+        padding: 15px;
+    }
+    h1 {
+        font-size: 1.5rem;
+    }
+    p {
+        font-size: 0.9rem;
+    }
+    nav ul {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    nav ul li {
+        margin: 0;
+    }
+}
+/*Window Resize*/
