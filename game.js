@@ -176,7 +176,7 @@ function animate() {
 
     // Update the animation mixer to play the animations
     if (mixer) {
-        mixer.update(0.016);  // Update at 60 FPS (or adjust as needed)
+        mixer.update(0.016);  // 60 FPS
     }
     if (jumpMixer) {
         jumpMixer.update(0.016);
@@ -220,12 +220,12 @@ window.addEventListener('resize', () => {
 
 // Adjust font size based on window size
 function adjustUITextSize() {
-    const baseFontSize = 1; // Base font size in vw (viewport width units)
+    const baseFontSize = 1;
     const healthDisplay = document.getElementById("healthDisplay");
     const scoreDisplay = document.getElementById("Score");
 
     // Calculate new font size based on window width
-    const newFontSize = baseFontSize * (window.innerWidth / 1000); // Adjust multiplier as needed
+    const newFontSize = baseFontSize * (window.innerWidth / 1000);
 
     // Set font size for both health and score displays
     healthDisplay.style.fontSize = `${newFontSize}vw`;
