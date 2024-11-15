@@ -49,7 +49,7 @@ loader.load("Running.glb", (gltf) => {
 
     // Running Animation Mixer
     mixer = new THREE.AnimationMixer(runningModel);
-    mixer.timeScale = 0.4; // Reduce the animation speed
+    mixer.timeScale = 0.8; // Reduce the animation speed
     runAction = mixer.clipAction(gltf.animations[0]);
     runAction.loop = THREE.LoopRepeat;
     runAction.play();
@@ -75,8 +75,8 @@ loader.load("Jump.glb", (gltf) => {
 }, undefined, (error) => console.error("Error loading Jumping animation:", error));
 
 // Gravity, Jump Variables, and Player Movement
-const gravity = -0.02; // Increased gravity for faster falling
-const jumpForce = 0.5 ; // Reduced jump force for lower jumps
+const gravity = -0.1; // Increased gravity for faster falling
+const jumpForce = 1 ; // Reduced jump force for lower jumps
 let velocityY = 0;
 let isJumping = false;
 let jumpStartTime = 0; // Time when the jump starts
