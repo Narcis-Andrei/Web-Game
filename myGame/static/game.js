@@ -166,7 +166,7 @@ function animate() {
 
     const currentTime = performance.now();
     const deltaTime = (currentTime - lastScoreUpdateTime) / 1000;
-    score += deltaTime * 0.1;
+    score += deltaTime * 5;
     lastScoreUpdateTime = currentTime;
     scoreDisplay.innerText = `Score: ${Math.floor(score)}`;
     
