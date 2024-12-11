@@ -14,26 +14,43 @@ Fix issue with animation and gravity for different pc
 
 File structure:
 Web-game
-->Assets
-    -> 3D objects
-		-> Jump.glb
-		-> Pands.glb
-		-> Running.glb
-    -> Images
-		->galaxy.jpg
-    -> Textures
-		->T_PandsW_B.png
+->myGame
+	->static
+		->Assets
+			-> 3D objects
+				-> Jump.glb
+				-> Pands.glb
+				-> Running.glb
+			-> Images
+				->galaxy.jpg
+			-> Textures
+				->T_PandsW_B.png
+		-> 404.html
+		-> game.gtml
+		-> game.js
+		-> index.html
+		-> loadGamePage.html
+		-> lading.js
+		-> login.html
+		-> signin.html
+		-> styles.css
+	-app.js
+->node_modules
 ->Powerpoint
     -> Panda Run.pptx
--> 404.html
--> game.gtml
--> game.js
--> index.html
--> loadGamePage.html
--> lading.js
--> login.html
 -> REDME.txt
--> signin.html
--> styles.css
+
 
 Contact: Narcis-Andrei.Tataranu@mail.bcu.ac.uk
+
+npm install bcrypt
+node myGame/app.js
+
+
+paths:
+home
+@cd C:\Users\S23162579\Desktop\Work\Web-Game
+@set PATH=C:\nodejs;%PATH%
+@cmd.exe /K
+
+uni
