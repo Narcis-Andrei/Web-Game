@@ -34,6 +34,7 @@ Web-game
 		-> login.html
 		-> signin.html
 		-> styles.css
+		->obstacles.js
 	-app.js
 ->node_modules
 ->Powerpoint

@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from 'https://unpkg.com/three@0.169.0/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from "https://unpkg.com/three@0.169.0/examples/jsm/loaders/GLTFLoader.js";
+import { ObstacleManager } from "./obstacles.js";
 
 // Scene, Camera, and Renderer Setup
 const scene = new THREE.Scene();
@@ -10,6 +11,7 @@ renderer.setPixelRatio(window.devicePixelRatio); // High DPI Support
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+let health = 100;
 // Adjust Camera for Different Screen Sizes
 function adjustCamera() {
     if (window.innerWidth < 768) { // Mobile view
@@ -22,6 +24,7 @@ function adjustCamera() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 }
+adjustCamera();
 
 // Lighting
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
@@ -43,12 +46,24 @@ const createskybox = () => {
 };
 createskybox();
 
+const healthDisplay = document.getElementById("healthDisplay");
+
+function updateHealth(amount) {
+    health -= amount; // Reduce health
+    health = Math.max(health, 0); // Prevent negative health
+    healthDisplay.innerText = `Health: ${health}`; // Update the displayed health
+    console.log(`Health: ${health}`); // Debugging log
+
+    if (health === 0) {
+        alert("Game Over!");
+        window.location.reload(); // Reload the page to restart the game
+    }
+}
+
 // GLTFLoader Initialization
 const loader = new GLTFLoader().setPath("Assets/3D objects/");
 let runningModel, jumpingModel, mixer, jumpMixer, runAction, jumpAction;
 const playerCenterDistance = 1;
-
-adjustCamera(); // Call camera adjustment initially
 
 // Load Running Animation
 loader.load("Running.glb", (gltf) => {
@@ -64,6 +79,8 @@ loader.load("Running.glb", (gltf) => {
     runAction = mixer.clipAction(gltf.animations[0]);
     runAction.loop = THREE.LoopRepeat;
     runAction.play();
+    // Initialize the ObstacleManager after player is loaded
+    obstacleManager = new ObstacleManager(scene, runningModel, updateHealth);
 });
 
 // Load Jumping Animation
@@ -81,6 +98,14 @@ loader.load("Jump.glb", (gltf) => {
     jumpAction.loop = THREE.LoopOnce;
     jumpAction.clampWhenFinished = true;
 });
+
+// Score and Health Display
+let score = 0;
+let lastScoreUpdateTime = performance.now();
+const scoreDisplay = document.getElementById("Score");
+
+// Initialize Obstacle Manager
+const obstacleManager = new ObstacleManager(scene, runningModel, updateHealth);
 
 // Gravity, Jump Variables, and Player Movement
 const gravity = -0.1;
@@ -136,19 +161,6 @@ function checkLanding() {
     }
 }
 
-// Score and Health Display
-let score = 0;
-let lastScoreUpdateTime = performance.now();
-const scoreDisplay = document.getElementById("Score");
-const healthDisplay = document.getElementById("healthDisplay");
-
-// Adjust UI Text Size
-function adjustUITextSize() {
-    const baseFontSize = window.innerWidth < 768 ? 5 : 2;
-    healthDisplay.style.fontSize = `${baseFontSize}vw`;
-    scoreDisplay.style.fontSize = `${baseFontSize}vw`;
-}
-
 // Animate Function - Game Loop
 function animate() {
     if (gamePaused) return;
@@ -158,6 +170,7 @@ function animate() {
     const deltaTime = (currentTime - lastScoreUpdateTime) / 1000;
     score += deltaTime * 0.1;
     scoreDisplay.innerText = `Score: ${Math.floor(score)}`;
+    
 
     if (mixer) mixer.update(0.016);
     if (jumpMixer) jumpMixer.update(0.016);
@@ -170,6 +183,9 @@ function animate() {
         if (jumpingModel.position.y <= groundLevel) checkLanding();
     }
 
+    // Update Obstacles
+    obstacleManager.update();
+    
     renderer.render(scene, camera);
 }
 
@@ -179,6 +195,13 @@ window.addEventListener('resize', () => {
     adjustCamera();
     adjustUITextSize();
 });
+
+// Adjust UI Text Size
+function adjustUITextSize() {
+    const baseFontSize = window.innerWidth < 768 ? 5 : 2;
+    healthDisplay.style.fontSize = `${baseFontSize}vw`;
+    scoreDisplay.style.fontSize = `${baseFontSize}vw`;
+}
 
 // Initialize UI and Start Game
 adjustUITextSize();
