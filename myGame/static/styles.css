@@ -1,106 +1,108 @@
-/* General Styles */
+/*Home Page*/
 body {
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    margin: 0;
+    height: 100vh;
     background: linear-gradient(180deg, #00ffb3, #00ffaa);
+    margin: 0;
+}
+
+.home-container {
+    text-align: center;
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
 }
 
 h1 {
     margin-bottom: 20px;
     color: #00ff9d;
-    font-size: 2.5rem;
-    text-align: center;
 }
 
-p {
+p{
     color: #00ff9d;
-    font-size: 1.2rem;
-    text-align: center;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+nav ul li {
+    margin: 10px 0;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #00ff88;
+    font-size: 18px;
+}
+
+nav ul li a:hover {
+    text-decoration: underline;
 }
 
 a {
-    font-size: 1rem;
+    font-size: 18px;
     color: #00ff9d;
     text-decoration: none;
+}
+/*Home Page*/
+
+
+/*404 Page*/
+.error-container {
+    text-align: center;
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#Error {
+    font-size: 96px;
+    margin: 0;
+    color: #00ffb3;
+}
+
+#ErrorText {
+    font-size: 24px;
+    margin: 20px 0;
+    color: #333;
 }
 
 a:hover {
     text-decoration: underline;
 }
 
-/* Home Page */
-.home-container {
-    text-align: center;
+/*404 Page*/
+
+
+/*Log in page Page*/
+.login-container {
     background: white;
-    padding: 30px;
+    padding: 40px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 90%;
-    max-width: 350px;
-}
-
-nav ul {
-    list-style-type: none;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-nav ul li a {
-    color: #00ff88;
-    font-size: 1.1rem;
-}
-
-/* 404 Page */
-.error-container {
     text-align: center;
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 90%;
-    max-width: 400px;
-}
-
-#Error {
-    font-size: 6rem;
-    margin: 0;
-    color: #00ffb3;
-}
-
-#ErrorText {
-    font-size: 1.5rem;
-    margin: 10px 0;
-    color: #333;
-}
-
-/* Login and Register Page */
-.login-container, .register-container {
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 90%;
-    max-width: 350px;
-    text-align: center;
+    width: 300px;
 }
 
 .input-group {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
+    margin-top: 25px;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 .input-group label {
+    display: block;
     margin-bottom: 5px;
-    font-size: 1rem;
-    color: #333;
 }
 
 .input-group input {
@@ -108,13 +110,70 @@ nav ul li a {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    text-align: left;
 }
 
 .options {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+
+button:hover {
+    background: #00cc88;
+}
+
+.register {
+    margin-top: 20px;
+}
+
+.register a {
+    color: #00ffaa;
+    text-decoration: none;
+}
+
+.register a:hover {
+    text-decoration: underline;
+}
+/*Log in page Page*/
+
+
+/*Register Page*/
+.register-container {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 300px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: left;
+}
+
+.options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
 }
 
@@ -126,46 +185,51 @@ button {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 1rem;
 }
 
 button:hover {
     background: #00cc88;
 }
 
-.register, .login {
-    margin-top: 15px;
+.login {
+    margin-top: 20px;
 }
 
-.register a, .login a {
-    color: #00ffaa;
+.login a {
+    color: #00ffb3;
     text-decoration: none;
 }
 
-.register a:hover, .login a:hover {
+.login a:hover {
     text-decoration: underline;
 }
+/*Register Page*/
 
-/* Responsive Design */
+/* Responsive Resizing */
 @media (max-width: 768px) {
     h1 {
         font-size: 2rem;
     }
-
-    p, a {
-        font-size: 1rem;
-    }
-
-    .home-container, .login-container, .register-container, .error-container {
-        padding: 20px;
-    }
-
-    #Error {
-        font-size: 4rem;
-    }
-
-    #ErrorText {
+    p, nav ul li a, a {
         font-size: 1.2rem;
+    }
+    .home-container, .login-container, .register-container {
+        padding: 20px;
+        width: 90%;
+    }
+
+    #Score, #healthDisplay {
+        font-size: 4vw;
+    }
+
+    #pauseMenu {
+        font-size: 1.5rem;
+        padding: 15px;
+    }
+
+    #pauseMenu button {
+        font-size: 0.9rem;
+        padding: 8px 16px;
     }
 }
 
@@ -173,30 +237,25 @@ button:hover {
     h1 {
         font-size: 1.5rem;
     }
-
-    p, a {
-        font-size: 0.9rem;
-    }
-
-    button {
-        font-size: 0.9rem;
-        padding: 8px;
-    }
-
-    .input-group input {
-        font-size: 0.9rem;
-    }
-
-    #Error {
-        font-size: 3rem;
-    }
-
-    #ErrorText {
+    p, nav ul li a, a {
         font-size: 1rem;
     }
+    .home-container, .login-container, .register-container {
+        padding: 10px;
+        width: 95%;
+    }
 
-    .home-container, .login-container, .register-container, .error-container {
-        padding: 15px;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    #Score, #healthDisplay {
+        font-size: 5vw;
+    }
+
+    #pauseMenu {
+        font-size: 1.2rem;
+        padding: 10px;
+    }
+
+    #pauseMenu button {
+        font-size: 0.8rem;
+        padding: 6px 12px;
     }
 }

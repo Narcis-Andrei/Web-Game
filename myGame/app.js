@@ -72,7 +72,7 @@ app.post('/login', (req, res) => {
   });
 });
 
-// 404
+// 404 Route - Handle undefined routes
 app.use((req, res) => {
   res.status(404).sendFile(path.join(__dirname, 'static', '404.html'));
 });

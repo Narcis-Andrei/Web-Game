@@ -12,27 +12,29 @@
             font-family: Arial, sans-serif;
             background: black; /* Fallback background */
         }
-        /* Optional: Style for buttons and text */
-        button {
-            padding: 10px 20px;
-            background: #00ffaa;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1.2rem;
-        }
-        button:hover {
-            background: #00cc88;
-        }
     </style>
 </head>
 <body>
-    <!-- Canvas will be added dynamically by the JavaScript script -->
-
-    <!-- Score and Health Displays -->
-    <div id="Score" style="position: absolute; top: 10px; left: 10px; color: white; font-size: 2vw;">Score: 0</div>
-    <div id="healthDisplay" style="position: absolute; top: 50px; left: 10px; color: white; font-size: 2vw;">Health: 100</div>
+    <!-- Game UI Elements -->
+    <div id="Score"
+    style="
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+        color: white;
+    ">
+    Score: 0
+    </div>
+    <!-- Health UI Elements -->
+    <div id = "healthDisplay" 
+    style = "position: absolute; 
+    top: 10px; 
+    left: 10px;
+    color: white">
+    Health: 100
+    </div>
 
     <!-- Pause Menu -->
     <div id="pauseMenu" style="
@@ -52,7 +54,11 @@
         <button onclick="window.location.href='index.html'">Home</button>
     </div>
 
-    <!-- JavaScript File -->
-    <script type="module" src="game.js"></script> <!-- Your JavaScript File -->
+    </div>
+    <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js">    </script>
+
+    <script type="importmap">  {    "imports": {      "three": "https://unpkg.com/three@0.169.0/build/three.module.js"    }  }    </script>
+    <script type="module" src="game.js"></script>
+  </body>
 </body>
 </html>
