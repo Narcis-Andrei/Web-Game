@@ -11,7 +11,6 @@ renderer.setPixelRatio(window.devicePixelRatio); // High DPI Support
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-let health = 100;
 // Adjust Camera for Different Screen Sizes
 function adjustCamera() {
     if (window.innerWidth < 768) { // Mobile view
@@ -46,20 +45,6 @@ const createskybox = () => {
 };
 createskybox();
 
-const healthDisplay = document.getElementById("healthDisplay");
-
-function updateHealth(amount) {
-    health -= amount; // Reduce health
-    health = Math.max(health, 0); // Prevent negative health
-    healthDisplay.innerText = `Health: ${health}`; // Update the displayed health
-    console.log(`Health: ${health}`); // Debugging log
-
-    if (health === 0) {
-        alert("Game Over!");
-        window.location.reload(); // Reload the page to restart the game
-    }
-}
-
 // GLTFLoader Initialization
 const loader = new GLTFLoader().setPath("Assets/3D objects/");
 let runningModel, jumpingModel, mixer, jumpMixer, runAction, jumpAction;
@@ -79,8 +64,6 @@ loader.load("Running.glb", (gltf) => {
     runAction = mixer.clipAction(gltf.animations[0]);
     runAction.loop = THREE.LoopRepeat;
     runAction.play();
-    // Initialize the ObstacleManager after player is loaded
-    obstacleManager = new ObstacleManager(scene, runningModel, updateHealth);
 });
 
 // Load Jumping Animation
@@ -99,17 +82,29 @@ loader.load("Jump.glb", (gltf) => {
     jumpAction.clampWhenFinished = true;
 });
 
-// Score and Health Display
-let score = 0;
-let lastScoreUpdateTime = performance.now();
+// Health and Score
+let health = 100;
+const healthDisplay = document.getElementById("healthDisplay");
 const scoreDisplay = document.getElementById("Score");
+
+function updateHealth(amount) {
+    health -= amount; // Reduce health
+    health = Math.max(health, 0); // Prevent negative health
+    healthDisplay.innerText = `Health: ${health}`; // Update the displayed health
+    console.log(`Health: ${health}`); // Debugging log
+
+    if (health === 0) {
+        alert("Game Over!");
+        window.location.reload(); // Reload the page to restart the game
+    }
+}
 
 // Initialize Obstacle Manager
 const obstacleManager = new ObstacleManager(scene, runningModel, updateHealth);
 
 // Gravity, Jump Variables, and Player Movement
-const gravity = -0.1;
-const jumpForce = 1;
+const gravity = -0.008;
+const jumpForce = 0.2;
 let velocityY = 0;
 let isJumping = false;
 let jumpStartTime = 0;
@@ -137,17 +132,6 @@ window.addEventListener('keydown', (event) => {
     }
 });
 
-// Pause Menu Handling
-function togglePauseMenu() {
-    const pauseMenu = document.getElementById('pauseMenu');
-    if (gamePaused) {
-        pauseMenu.style.display = 'block';
-    } else {
-        pauseMenu.style.display = 'none';
-        animate();
-    }
-}
-
 // Check Landing Function
 function checkLanding() {
     if (jumpingModel.position.y <= groundLevel && isJumping) {
@@ -161,6 +145,20 @@ function checkLanding() {
     }
 }
 
+// Pause Menu Handling
+function togglePauseMenu() {
+    const pauseMenu = document.getElementById('pauseMenu');
+    if (gamePaused) {
+        pauseMenu.style.display = 'block';
+    } else {
+        pauseMenu.style.display = 'none';
+        animate();
+    }
+}
+
+let lastScoreUpdateTime = performance.now();
+let score = 0;
+
 // Animate Function - Game Loop
 function animate() {
     if (gamePaused) return;
@@ -169,11 +167,12 @@ function animate() {
     const currentTime = performance.now();
     const deltaTime = (currentTime - lastScoreUpdateTime) / 1000;
     score += deltaTime * 0.1;
+    lastScoreUpdateTime = currentTime;
     scoreDisplay.innerText = `Score: ${Math.floor(score)}`;
     
 
-    if (mixer) mixer.update(0.016);
-    if (jumpMixer) jumpMixer.update(0.016);
+    if (mixer) mixer.update(0.006);
+    if (jumpMixer) jumpMixer.update(0.006);
 
     if (isJumping) {
         const elapsedTime = performance.now() - jumpStartTime;

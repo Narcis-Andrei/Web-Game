@@ -20,8 +20,6 @@ export class ObstacleManager {
         obstacle.position.set(10, 1, 0);
         this.scene.add(obstacle);
         this.obstacles.push(obstacle);
-
-        console.log("Obstacle spawned:", obstacle);
     }
 
     update() {
@@ -48,7 +46,6 @@ export class ObstacleManager {
     
             // Remove obstacles that move off-screen
             if (obstacle.position.x < -10) {
-                console.log("Obstacle removed off-screen");
                 this.scene.remove(obstacle);
                 this.obstacles.splice(index, 1);
             }
