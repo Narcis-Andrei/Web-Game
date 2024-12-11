@@ -9,26 +9,56 @@
 <body>
     <div class="login-container">
         <h1>Login</h1>
-        <form>
+        <form id="loginForm">
             <div class="input-group">
                 <label for="email">Email</label>
-                <input type="email" id="email" placeholder="Email">
+                <input type="email" id="email" placeholder="Email" required>
             </div>
             <div class="input-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" placeholder="Password">
+                <input type="password" id="password" placeholder="Password" required>
             </div>
             <div class="options">
                 <label><input type="checkbox"> Remember Me</label>
                 <a href="404.html">Forgot Password</a>
             </div>
-            <a href="loadGamePage.html">
-                <button type="button">Log in</button>
-            </a>
+            <button type="submit">Log in</button>
         </form>
         <div class="register">
             Don't have an account? <a href="signin.html">Register</a>
         </div>
+        <p id="errorMessage" style="color: red; display: none;">Invalid email or password!</p>
     </div>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", async function(event) {
+            event.preventDefault(); // Prevent form submission
+            
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            try {
+                const response = await fetch("/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    alert("Login successful!");
+                    window.location.href = "loadGamePage.html"; // Redirect on success
+                } else {
+                    const errorMessage = document.getElementById("errorMessage");
+                    errorMessage.textContent = data.message;
+                    errorMessage.style.display = "block";
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        });
+    </script>
 </body>
 </html>

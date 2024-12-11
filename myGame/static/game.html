@@ -1,59 +1,58 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>
-      Game
-    </title>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css"type="text/css">
-  </head>
+    <title>3D Game</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Prevent scrollbars */
+            font-family: Arial, sans-serif;
+            background: black; /* Fallback background */
+        }
+        /* Optional: Style for buttons and text */
+        button {
+            padding: 10px 20px;
+            background: #00ffaa;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        button:hover {
+            background: #00cc88;
+        }
+    </style>
+</head>
+<body>
+    <!-- Canvas will be added dynamically by the JavaScript script -->
 
-  <body>
-    <div class = "UI">
-        <div id = "healthDisplay" 
-        style = "position: absolute; 
-        top: 10px; 
-        left: 10px;
-        color: white">
-        Health: 100
-      </div>
+    <!-- Score and Health Displays -->
+    <div id="Score" style="position: absolute; top: 10px; left: 10px; color: white; font-size: 2vw;">Score: 0</div>
+    <div id="healthDisplay" style="position: absolute; top: 50px; left: 10px; color: white; font-size: 2vw;">Health: 100</div>
 
-      <div id="Score"
-      style="
-          position: absolute;
-          top: 10px;
-          left: 50%;
-          transform: translateX(-50%);
-          text-align: center;
-          color: white;
-      ">
-      Score: 0
-  </div>
-
-  <div id="pauseMenu" 
-  style="display: none;
-      position: absolute; 
-      top: 50%; left: 50%; 
-      transform: translate(-50%, -50%); 
-      background-color: rgba(0,0,0,0.7); 
-      padding: 20px; 
-      border-radius: 10px; 
-      color: white;">
-      <h2>Game Paused</h2>
-
-      <button id="goToHomePageButton" onclick="goToHomePage()" 
-      style=
-      "padding: 10px;
-      color: white;
-      background-color: rgb(0, 255, 179);
-      ">
-      Go to Home</button>
-  </div>
-
+    <!-- Pause Menu -->
+    <div id="pauseMenu" style="
+        display: none;
+        position: absolute;
+        top: 30%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 2rem;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+    ">
+        <p>Game Paused</p>
+        <button onclick="window.location.href='index.html'">Home</button>
     </div>
-    <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js">    </script>
 
-    <script type="importmap">  {    "imports": {      "three": "https://unpkg.com/three@0.169.0/build/three.module.js"    }  }    </script>
-    <script type="module" src="game.js"></script>
-  </body>
+    <!-- JavaScript File -->
+    <script type="module" src="game.js"></script> <!-- Your JavaScript File -->
+</body>
 </html>

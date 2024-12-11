@@ -37,3 +37,17 @@ Web-game
 -> styles.css
 
 Contact: Narcis-Andrei.Tataranu@mail.bcu.ac.uk
+
+Temp paths: 
+uni
+@cd C:\Users\S23162579\Desktop\Work\Web-Game
+@set PATH=C:\nodejs;%PATH%
+@cmd.exe /K
+
+home
+@cd C:\Users\andre\Desktop\Y2\Web-Game
+@set PATH=C:\nodejs;%PATH%
+@cmd.exe /K
+
+run server
+node myGame/app.js

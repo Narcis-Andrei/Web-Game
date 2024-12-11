@@ -1,165 +1,106 @@
-/*Home Page*/
+/* General Styles */
 body {
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    background: linear-gradient(180deg, #00ffb3, #00ffaa);
+    min-height: 100vh;
     margin: 0;
-}
-
-.home-container {
-    text-align: center;
-    background: white;
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 300px;
+    background: linear-gradient(180deg, #00ffb3, #00ffaa);
 }
 
 h1 {
     margin-bottom: 20px;
     color: #00ff9d;
+    font-size: 2.5rem;
+    text-align: center;
 }
 
-p{
+p {
     color: #00ff9d;
-}
-
-nav ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-nav ul li {
-    margin: 10px 0;
-}
-
-nav ul li a {
-    text-decoration: none;
-    color: #00ff88;
-    font-size: 18px;
-}
-
-nav ul li a:hover {
-    text-decoration: underline;
+    font-size: 1.2rem;
+    text-align: center;
 }
 
 a {
-    font-size: 18px;
+    font-size: 1rem;
     color: #00ff9d;
     text-decoration: none;
-}
-/*Home Page*/
-
-
-/*404 Page*/
-.error-container {
-    text-align: center;
-    background: white;
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-#Error {
-    font-size: 96px;
-    margin: 0;
-    color: #00ffb3;
-}
-
-#ErrorText {
-    font-size: 24px;
-    margin: 20px 0;
-    color: #333;
 }
 
 a:hover {
     text-decoration: underline;
 }
 
-/*404 Page*/
-
-
-/*Log in page Page*/
-.login-container {
+/* Home Page */
+.home-container {
+    text-align: center;
     background: white;
-    padding: 40px;
+    padding: 30px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 350px;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+nav ul li a {
+    color: #00ff88;
+    font-size: 1.1rem;
+}
+
+/* 404 Page */
+.error-container {
     text-align: center;
-    width: 300px;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 400px;
+}
+
+#Error {
+    font-size: 6rem;
+    margin: 0;
+    color: #00ffb3;
+}
+
+#ErrorText {
+    font-size: 1.5rem;
+    margin: 10px 0;
+    color: #333;
+}
+
+/* Login and Register Page */
+.login-container, .register-container {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 350px;
+    text-align: center;
 }
 
 .input-group {
-    margin-bottom: 15px;
-    margin-top: 25px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.input-group label {
-    display: block;
-    margin-bottom: 5px;
-}
-
-.input-group input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    text-align: left;
-}
-
-.options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     margin-bottom: 20px;
-}
-
-button:hover {
-    background: #00cc88;
-}
-
-.register {
-    margin-top: 20px;
-}
-
-.register a {
-    color: #00ffaa;
-    text-decoration: none;
-}
-
-.register a:hover {
-    text-decoration: underline;
-}
-/*Log in page Page*/
-
-
-/*Register Page*/
-.register-container {
-    background: white;
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    width: 300px;
-}
-
-.input-group {
-    margin-bottom: 15px;
-    margin-top: 25px;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 .input-group label {
-    display: block;
     margin-bottom: 5px;
+    font-size: 1rem;
+    color: #333;
 }
 
 .input-group input {
@@ -167,13 +108,13 @@ button:hover {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    text-align: left;
 }
 
 .options {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    font-size: 0.9rem;
     margin-bottom: 20px;
 }
 
@@ -185,56 +126,77 @@ button {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 1rem;
 }
 
 button:hover {
     background: #00cc88;
 }
 
-.login {
-    margin-top: 20px;
+.register, .login {
+    margin-top: 15px;
 }
 
-.login a {
-    color: #00ffb3;
+.register a, .login a {
+    color: #00ffaa;
     text-decoration: none;
 }
 
-.login a:hover {
+.register a:hover, .login a:hover {
     text-decoration: underline;
 }
-/*Register Page*/
 
-/*Window Resize*/
+/* Responsive Design */
 @media (max-width: 768px) {
     h1 {
         font-size: 2rem;
     }
-    p {
+
+    p, a {
         font-size: 1rem;
     }
-    nav ul li {
-        margin: 0 5px;
+
+    .home-container, .login-container, .register-container, .error-container {
+        padding: 20px;
+    }
+
+    #Error {
+        font-size: 4rem;
+    }
+
+    #ErrorText {
+        font-size: 1.2rem;
     }
 }
 
 @media (max-width: 480px) {
-    .home-container {
-        padding: 15px;
-    }
     h1 {
         font-size: 1.5rem;
     }
-    p {
+
+    p, a {
         font-size: 0.9rem;
     }
-    nav ul {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
+
+    button {
+        font-size: 0.9rem;
+        padding: 8px;
     }
-    nav ul li {
-        margin: 0;
+
+    .input-group input {
+        font-size: 0.9rem;
+    }
+
+    #Error {
+        font-size: 3rem;
+    }
+
+    #ErrorText {
+        font-size: 1rem;
+    }
+
+    .home-container, .login-container, .register-container, .error-container {
+        padding: 15px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     }
 }
-/*Window Resize*/
