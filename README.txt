@@ -44,9 +44,11 @@ Web-game
 
 Contact: Narcis-Andrei.Tataranu@mail.bcu.ac.uk
 
+
+
 npm install bcrypt
 node myGame/app.js
-
+node app.js
 
 paths:
 home
@@ -55,3 +57,6 @@ home
 @cmd.exe /K
 
 uni
+@cd C:\Users\S23162579\Desktop\Work\Web-Game\myGame
+@set PATH=nodejs;%PATH%
+@cmd.exe /K
