@@ -8,14 +8,13 @@
         body, html {
             margin: 0;
             padding: 0;
-            overflow: hidden; /* Prevent scrollbars */
+            overflow: hidden;
             font-family: Arial, sans-serif;
-            background: black; /* Fallback background */
+            background: black;
         }
     </style>
 </head>
 <body>
-    <!-- Game UI Elements -->
     <div id="Score"
         style="
             position: absolute;
@@ -28,7 +27,6 @@
         Score: 0
     </div>
 
-    <!-- Health UI Elements -->
     <div id="healthDisplay" 
         style="
             position: absolute; 
@@ -40,7 +38,6 @@
         Health: 100
     </div>
 
-    <!-- Pause Menu -->
     <div id="pauseMenu" 
         style="
             display: none;
@@ -57,10 +54,9 @@
     ">
         <p>Game Paused</p>
         <button onclick="window.location.href='index.html'">Home</button>
-        <button onclick="restartGame()">Restart</button> <!-- Restart Game Button -->
+        <button onclick="restartGame()">Restart</button>
     </div>
 
-    <!-- Import Scripts -->
     <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
     <script type="importmap">
         {
@@ -71,7 +67,6 @@
     </script>
     <script type="module" src="game.js"></script>
 
-    <!-- Restart Game Function -->
     <script>
         function restartGame() {
             location.reload(); // Reload the page to restart the game

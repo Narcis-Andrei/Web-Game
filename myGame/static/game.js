@@ -3,17 +3,17 @@ import { OrbitControls } from 'https://unpkg.com/three@0.169.0/examples/jsm/cont
 import { GLTFLoader } from "https://unpkg.com/three@0.169.0/examples/jsm/loaders/GLTFLoader.js";
 import { ObstacleManager } from "./obstacles.js";
 
-// Scene, Camera, and Renderer Setup
+// Scene, camera, and renderer setup
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(window.devicePixelRatio); // High DPI Support
+renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Adjust Camera for Different Screen Sizes
+// Adjust camera for different screen sizes
 function adjustCamera() {
-    if (window.innerWidth < 768) { // Mobile view
+    if (window.innerWidth < 768) { // For mobile view
         camera.fov = 75;
         camera.position.set(0, 2, 8);
     } else {
@@ -29,7 +29,7 @@ adjustCamera();
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 scene.add(directionalLight);
 
-// Skybox Setup
+// Skybox
 const createskybox = () => {
     const loader = new THREE.TextureLoader();
     loader.load("Assets/Images/galaxy.jpg", function (texture) {
@@ -45,12 +45,12 @@ const createskybox = () => {
 };
 createskybox();
 
-// GLTFLoader Initialization
+// GLTFLoader initialization
 const loader = new GLTFLoader().setPath("Assets/3D objects/");
 let runningModel, jumpingModel, mixer, jumpMixer, runAction, jumpAction;
 const playerCenterDistance = 1;
 
-// Load Running Animation
+// Load running animation
 loader.load("Running.glb", (gltf) => {
     runningModel = gltf.scene;
     runningModel.scale.set(150, 150, 150);
@@ -66,7 +66,7 @@ loader.load("Running.glb", (gltf) => {
     runAction.play();
 });
 
-// Load Jumping Animation
+// Load jumping animation
 loader.load("Jump.glb", (gltf) => {
     jumpingModel = gltf.scene;
     jumpingModel.scale.set(150, 150, 150);
@@ -82,11 +82,12 @@ loader.load("Jump.glb", (gltf) => {
     jumpAction.clampWhenFinished = true;
 });
 
-// Health and Score
+// Health and score
 let health = 100;
 const healthDisplay = document.getElementById("healthDisplay");
 const scoreDisplay = document.getElementById("Score");
 
+// Doesn't work yet cu player doesnt have hitbox :)
 function updateHealth(amount) {
     health -= amount; // Reduce health
     health = Math.max(health, 0); // Prevent negative health
@@ -102,7 +103,8 @@ function updateHealth(amount) {
 // Initialize Obstacle Manager
 const obstacleManager = new ObstacleManager(scene, runningModel, updateHealth);
 
-// Gravity, Jump Variables, and Player Movement
+// Can use ammo.js and reright
+// Gravity, jump variables, and player movement
 const gravity = -0.008;
 const jumpForce = 0.2;
 let velocityY = 0;
@@ -110,10 +112,10 @@ let isJumping = false;
 let jumpStartTime = 0;
 const groundLevel = 1;
 
-// Game Pause State
+// Game pause state
 let gamePaused = false;
 
-// Input Event Listener for Jump
+// Input event listener for jump
 window.addEventListener('keydown', (event) => {
     if (event.code === 'Space' && !isJumping && !gamePaused) {
         isJumping = true;
@@ -132,7 +134,7 @@ window.addEventListener('keydown', (event) => {
     }
 });
 
-// Check Landing Function
+// Check landing function
 function checkLanding() {
     if (jumpingModel.position.y <= groundLevel && isJumping) {
         isJumping = false;
@@ -145,7 +147,7 @@ function checkLanding() {
     }
 }
 
-// Pause Menu Handling
+// Pause menu handling
 function togglePauseMenu() {
     const pauseMenu = document.getElementById('pauseMenu');
     if (gamePaused) {
@@ -159,7 +161,7 @@ function togglePauseMenu() {
 let lastScoreUpdateTime = performance.now();
 let score = 0;
 
-// Animate Function - Game Loop
+// Animate function / Game loop
 function animate() {
     if (gamePaused) return;
     requestAnimationFrame(animate);
@@ -182,26 +184,26 @@ function animate() {
         if (jumpingModel.position.y <= groundLevel) checkLanding();
     }
 
-    // Update Obstacles
+    // Update obstacles
     obstacleManager.update();
     
     renderer.render(scene, camera);
 }
 
-// Resize Handling
+// Resize handling
 window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
     adjustCamera();
     adjustUITextSize();
 });
 
-// Adjust UI Text Size
+// Adjust UI text size
 function adjustUITextSize() {
     const baseFontSize = window.innerWidth < 768 ? 5 : 2;
     healthDisplay.style.fontSize = `${baseFontSize}vw`;
     scoreDisplay.style.fontSize = `${baseFontSize}vw`;
 }
 
-// Initialize UI and Start Game
+// Initialize UI and start game
 adjustUITextSize();
 animate();

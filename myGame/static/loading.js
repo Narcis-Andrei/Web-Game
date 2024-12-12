@@ -21,7 +21,7 @@ function loadImage(src) {
     });
 }
 
-// Function to update progress (optional)
+// Function to update progress
 function updateLoadingProgress() {
     const loadingText = document.getElementById("loading-text");
     loadingText.textContent = "Loading game assets: ${assetsLoaded}/${totalAssets}...";

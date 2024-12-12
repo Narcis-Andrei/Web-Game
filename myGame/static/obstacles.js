@@ -6,7 +6,7 @@ export class ObstacleManager {
         this.player = player;                 // The player model for collision detection
         this.updateHealth = updateHealthCallback; // Callback to update health
         this.obstacles = [];                  // Array to store obstacles
-        this.spawnInterval = 2000;            // Time between obstacle spawns (in ms)
+        this.spawnInterval = 2000;            // Time between obstacle spawns
         this.lastSpawnTime = performance.now();
         this.speed = 0.05;                    // Speed of obstacles
     }
@@ -16,7 +16,7 @@ export class ObstacleManager {
         const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
         const obstacle = new THREE.Mesh(geometry, material);
 
-        // Set the initial position off-screen to the right
+        // Set the initial position off screen to the right
         obstacle.position.set(10, 1, 0);
         this.scene.add(obstacle);
         this.obstacles.push(obstacle);
@@ -44,7 +44,7 @@ export class ObstacleManager {
                 this.obstacles.splice(index, 1); // Remove from array
             }
     
-            // Remove obstacles that move off-screen
+            // Remove obstacles that move off screen
             if (obstacle.position.x < -10) {
                 this.scene.remove(obstacle);
                 this.obstacles.splice(index, 1);
