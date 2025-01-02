@@ -145,40 +145,42 @@ function spawnItem() {
         }
         item.position.set(xPosition, yPosition, -1.7);
         item.userData.type = itemType; // Store type for interaction
-        item.userData.rotationSpeedX = 0.05; // Constant rotation speed for X
-        item.userData.rotationSpeedY = 0.05; // Constant rotation speed for Y
         scene.add(item);
         items.push(item);
     });
 }
 
-function updateItems(deltaTime) {
+let playerBoundingBox = new THREE.Box3();
+let playerModel = runningModel || jumpingModel;
+
+function updatePlayerBoundingBox() {
+    if (playerModel) {
+        playerBoundingBox.setFromObject(playerModel);
+    }
+}
+
+function checkCollisions() {
     for (let i = items.length - 1; i >= 0; i--) {
         const item = items[i];
-
-        // Move the item left along the x-axis
-        item.position.x -= moveSpeed * deltaTime;
-
-        // Apply rotation for spinning effect
-        if (item.userData.rotationSpeedX && item.userData.rotationSpeedY) {
-            item.rotation.x += item.userData.rotationSpeedX * deltaTime;
-            item.rotation.y += item.userData.rotationSpeedY * deltaTime;
-        }
-
-        // Check interaction with player
-        if (item.position.x < 1 && item.position.x > -1) {
+        const itemBoundingBox = new THREE.Box3().setFromObject(item);
+        if (playerBoundingBox.intersectsBox(itemBoundingBox)) {
             if (item.userData.type === "Bamboo") {
                 updateHealth(15);
             } else if (item.userData.type === "Chocolate") {
                 updateHealth(-10);
             }
-
             scene.remove(item);
             items.splice(i, 1);
-            continue;
         }
+    }
+}
 
-        // Despawn old items that move off-screen
+function updateItems(deltaTime) {
+    updatePlayerBoundingBox();
+    for (let i = items.length - 1; i >= 0; i--) {
+        const item = items[i];
+        item.position.x -= moveSpeed * deltaTime;
+        checkCollisions();
         if (item.position.x < -40) {
             scene.remove(item);
             items.splice(i, 1);
@@ -190,9 +192,8 @@ setInterval(() => {
     if (!isPaused) {
         spawnItem();
     }
-}, Math.random() * 2000 + 1000); // Random interval between 1s and 3s
+}, Math.random() * 2000 + 1000);
 
-// Move terrain and items
 function updateTerrain(deltaTime) {
     for (let i = terrainModels.length - 1; i >= 0; i--) {
         const terrain = terrainModels[i];
@@ -217,7 +218,6 @@ function updateTerrain(deltaTime) {
     }
 }
 
-// Load Running.glb for running animation
 loader.load("Running.glb", (gltf) => {
     runningModel = gltf.scene;
     runningModel.scale.set(120, 120, 120);
@@ -234,7 +234,6 @@ loader.load("Running.glb", (gltf) => {
     }
 });
 
-// Load Jump.glb for jumping animation
 loader.load("Jump.glb", (gltf) => {
     jumpingModel = gltf.scene;
     jumpingModel.scale.set(120, 120, 120);
@@ -264,7 +263,6 @@ loader.load("Jump.glb", (gltf) => {
         jumpAction.loop = THREE.LoopOnce;
     }
 
-    // Input event listener for jump
     window.addEventListener("keydown", (event) => {
         if (event.code === "Space" && !isJumping) {
             isJumping = true;
@@ -278,47 +276,36 @@ loader.load("Jump.glb", (gltf) => {
             velocityY = jumpForce;
         }
     });
-
-    // Update jumping mechanics
-    function updateJump(deltaTime) {
-        if (isJumping) {
-            velocityY += gravity * deltaTime;
-            jumpingModel.position.y += velocityY;
-
-            if (jumpingModel.position.y <= groundLevel) {
-                jumpingModel.position.y = groundLevel;
-                isJumping = false;
-                velocityY = 0;
-
-                jumpingModel.visible = false;
-                runningModel.position.copy(jumpingModel.position);
-                runningModel.visible = true;
-
-                runAction.reset();
-                runAction.play();
-            }
-        }
-    }
-
-    // Game loop
-    let lastFrameTime = performance.now();
-    function animate() {
-        if (!isPaused) {
-            const currentTime = performance.now();
-            const deltaTime = (currentTime - lastFrameTime) / 1000;
-            lastFrameTime = currentTime;
-
-            if (mixer) mixer.update(deltaTime);
-            if (jumpMixer) jumpMixer.update(deltaTime);
-
-            updateTerrain(deltaTime);
-            updateItems(deltaTime); // Added spinning update here
-            updateJump(deltaTime);
-
-            renderer.render(scene, camera);
-        }
-        requestAnimationFrame(animate);
-    }
-
-    animate();
 });
+
+function updateJump(deltaTime) {
+    if (isJumping) {
+        velocityY += gravity * deltaTime;
+        jumpingModel.position.y += velocityY;
+
+        if (jumpingModel.position.y <= groundLevel) {
+            jumpingModel.position.y = groundLevel;
+            isJumping = false;
+            runningModel.visible = true;
+            jumpingModel.visible = false;
+        }
+    }
+}
+
+let lastFrameTime = performance.now();
+function animate() {
+    if (!isPaused) {
+        const currentTime = performance.now();
+        const deltaTime = (currentTime - lastFrameTime) / 1000;
+        lastFrameTime = currentTime;
+        if (mixer) mixer.update(deltaTime);
+        if (jumpMixer) jumpMixer.update(deltaTime);
+        updatePlayerBoundingBox();
+        updateTerrain(deltaTime);
+        updateItems(deltaTime);
+        updateJump(deltaTime);
+        renderer.render(scene, camera);
+    }
+    requestAnimationFrame(animate);
+}
+animate();
