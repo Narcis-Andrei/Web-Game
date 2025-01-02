@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from 'https://unpkg.com/three@0.169.0/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from "https://unpkg.com/three@0.169.0/examples/jsm/loaders/GLTFLoader.js";
-import { ObstacleManager } from "./obstacles.js";
+
 
 // Scene, camera, and renderer setup
 const scene = new THREE.Scene();
@@ -110,7 +110,7 @@ const maxJumps = 3;
 const maxJumpHeight = 3;
 
 // Load running animation
-loader.load("Running.glb", (gltf) => {
+loader.load("Jump.glb", (gltf) => {
     runningModel = gltf.scene;
     runningModel.scale.set(150, 150, 150);
     runningModel.position.set(0, playerCenterDistance, 0);
