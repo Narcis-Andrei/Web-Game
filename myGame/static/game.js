@@ -2,7 +2,6 @@ import * as THREE from "three";
 import { OrbitControls } from 'https://unpkg.com/three@0.169.0/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from "https://unpkg.com/three@0.169.0/examples/jsm/loaders/GLTFLoader.js";
 
-
 // Scene, camera, and renderer setup
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -45,6 +44,11 @@ const pauseMenu = document.getElementById('pauseMenu');
 let score = 0;
 let health = 100;
 let isPaused = false;
+let isJumping = false;
+let velocityY = 0;
+const gravity = -1.5; // Reduced gravity for smoother jump
+const jumpForce = 0.2; // Reduced jump force for smoother physics
+const groundLevel = 1;
 
 // Update score every second
 setInterval(() => {
@@ -103,14 +107,9 @@ createskybox();
 const loader = new GLTFLoader().setPath("Assets/3D objects/");
 let runningModel, jumpingModel, mixer, jumpMixer, runAction, jumpAction;
 const playerCenterDistance = 1;
-let jumpCount = 0;
-const maxJumps = 3;
 
-// Maximum jump height
-const maxJumpHeight = 3;
-
-// Load running animation
-loader.load("Jump.glb", (gltf) => {
+// Load Running.glb for running animation
+loader.load("Running.glb", (gltf) => {
     runningModel = gltf.scene;
     runningModel.scale.set(150, 150, 150);
     runningModel.position.set(0, playerCenterDistance, 0);
@@ -119,7 +118,6 @@ loader.load("Jump.glb", (gltf) => {
     scene.add(runningModel);
 
     mixer = new THREE.AnimationMixer(runningModel);
-    mixer.timeScale = 0.8;
     if (gltf.animations.length > 0) {
         runAction = mixer.clipAction(gltf.animations[0]);
         runAction.loop = THREE.LoopRepeat;
@@ -127,7 +125,7 @@ loader.load("Jump.glb", (gltf) => {
     }
 });
 
-// Load jumping animation
+// Load Jump.glb for jumping animation
 loader.load("Jump.glb", (gltf) => {
     jumpingModel = gltf.scene;
     jumpingModel.scale.set(150, 150, 150);
@@ -136,71 +134,79 @@ loader.load("Jump.glb", (gltf) => {
     jumpingModel.visible = false;
     scene.add(jumpingModel);
 
+    // Apply texture
+    const textureLoader = new THREE.TextureLoader();
+    const texture = textureLoader.load("Assets/Textures/T_PandaW_B.png", () => {
+        jumpingModel.traverse((child) => {
+            if (child.isMesh) {
+                child.material.map = texture;
+                child.material.needsUpdate = true;
+        
+                // Correct UV mapping or texture orientation if needed
+                child.material.map.wrapS = THREE.RepeatWrapping;
+                child.material.map.wrapT = THREE.RepeatWrapping;
+                child.material.map.repeat.set(1, 1);
+            }
+        });
+    });
+
     jumpMixer = new THREE.AnimationMixer(jumpingModel);
-    jumpMixer.timeScale = 0.8;
     if (gltf.animations.length > 0) {
         jumpAction = jumpMixer.clipAction(gltf.animations[0]);
-        jumpAction.loop = THREE.LoopOnce;
+        jumpAction.timeScale = 1.2; // Increased animation speed for smoother jump
         jumpAction.clampWhenFinished = true;
+        jumpAction.loop = THREE.LoopOnce; // Play animation only once
+    } else {
+        console.error("No animations found in Jump.glb");
     }
 });
-
-// Gravity, jump variables, and player movement
-const gravity = -0.02; // Adjusted for smoother jump curve
-const jumpForce = 0.3;  // Adjusted upward force for natural curve
-let velocityY = 0;
-let isJumping = false;
-const groundLevel = 1;
 
 // Input event listener for jump
-window.addEventListener('keydown', (event) => {
-    if (event.code === 'Space' && jumpCount < maxJumps) {
-        isJumping = true;
-        velocityY = jumpForce;
-        jumpCount++;
+window.addEventListener("keydown", (event) => {
+    if (event.code === "Space" && !isJumping) {
+        isJumping = true; // Prevent multiple jumps
 
+        // Trigger jump animation
+        if (jumpAction) {
+            jumpAction.reset();
+            jumpAction.play();
+        }
+
+        // Switch to jumping model
         runningModel.visible = false;
-        jumpingModel.position.copy(runningModel.position);
+        jumpingModel.position.copy(runningModel.position); // Sync position
         jumpingModel.visible = true;
-        if (jumpAction) jumpAction.reset().play();
+
+        // Start jump physics
+        velocityY = jumpForce;
     }
 });
 
-function checkLanding() {
-    if (jumpingModel.position.y <= groundLevel && isJumping) {
-        isJumping = false;
-        velocityY = 0;
-
-        jumpingModel.visible = false;
-        runningModel.position.copy(jumpingModel.position);
-        runningModel.visible = true;
-        if (runAction) runAction.reset().play();
-
-        if (jumpCount >= maxJumps) {
-            jumpCount = 0; // Reset jump count on landing if max jumps reached
-        }
-    }
-}
-
-// Update function to handle jumping
+// Update function to handle jumping mechanics
 function updateJump(deltaTime) {
     if (isJumping) {
         velocityY += gravity * deltaTime; // Apply gravity
-        jumpingModel.position.y += velocityY;
-
-        // Clamp to maximum jump height smoothly
-        if (jumpingModel.position.y > maxJumpHeight) {
-            jumpingModel.position.y = maxJumpHeight;
-            velocityY = 0; // Stop upward motion when max height is reached
-        }
+        jumpingModel.position.y += velocityY; // Update vertical position
 
         if (jumpingModel.position.y <= groundLevel) {
-            checkLanding(); // Trigger landing
+            jumpingModel.position.y = groundLevel;
+            isJumping = false; // Reset jump state
+            velocityY = 0;
+
+            // Switch back to running model
+            jumpingModel.visible = false;
+            runningModel.position.copy(jumpingModel.position); // Synchronize positions
+            runningModel.visible = true;
+
+            if (runAction) {
+                runAction.reset();
+                runAction.play();
+            }
         }
     }
 }
 
-// Integrate into game loop
+// Game loop
 let lastFrameTime = performance.now();
 function animate() {
     if (!isPaused) {
@@ -208,13 +214,14 @@ function animate() {
         const deltaTime = (currentTime - lastFrameTime) / 1000;
         lastFrameTime = currentTime;
 
-        // Update animation mixers
+        // Update mixers
         if (mixer) mixer.update(deltaTime);
         if (jumpMixer) jumpMixer.update(deltaTime);
 
-        // Update jump mechanics
+        // Handle jumping mechanics
         updateJump(deltaTime);
 
+        // Render the scene
         renderer.render(scene, camera);
     }
     requestAnimationFrame(animate);
