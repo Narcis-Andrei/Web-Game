@@ -54,6 +54,7 @@ let moveSpeed = 2; // Reduced movement speed for terrain
 const minSpawnInterval = 0.5; // Minimum spawn interval to ensure stability
 
 const terrainModels = [];
+const items = []; // Array to store Bamboo and Chocolate items
 
 // Update score every second
 setInterval(() => {
@@ -87,7 +88,7 @@ function updateHealth(amount) {
 // Example: Decrease health over time
 setInterval(() => {
     if (!isPaused) {
-        updateHealth(-10);
+        updateHealth(-5);
     }
 }, 2000);
 
@@ -130,7 +131,68 @@ function spawnTerrain(xPosition) {
 spawnTerrain(-10);
 spawnTerrain(10);
 
-// Move terrain
+function spawnItem() {
+    const itemType = Math.random() < 0.7 ? "Bamboo" : "Chocolate"; // Higher chance for Bamboo
+    const yPosition = Math.random() < 0.5 ? 4 : 5; // Updated to spawn at y=1 or y=5
+    const xPosition = 20; // Fixed x position for spawning
+
+    loader.load(`${itemType}.glb`, (gltf) => {
+        const item = gltf.scene.clone();
+        if (itemType === "Bamboo") {
+            item.scale.set(0.25, 0.25, 0.25); // Increase size for Bamboo
+        } else if (itemType === "Chocolate") {
+            item.scale.set(2, 2, 2); // Increase size for Chocolate
+        }
+        item.position.set(xPosition, yPosition, -1.7);
+        item.userData.type = itemType; // Store type for interaction
+        item.userData.rotationSpeedX = 0.05; // Constant rotation speed for X
+        item.userData.rotationSpeedY = 0.05; // Constant rotation speed for Y
+        scene.add(item);
+        items.push(item);
+    });
+}
+
+function updateItems(deltaTime) {
+    for (let i = items.length - 1; i >= 0; i--) {
+        const item = items[i];
+
+        // Move the item left along the x-axis
+        item.position.x -= moveSpeed * deltaTime;
+
+        // Apply rotation for spinning effect
+        if (item.userData.rotationSpeedX && item.userData.rotationSpeedY) {
+            item.rotation.x += item.userData.rotationSpeedX * deltaTime;
+            item.rotation.y += item.userData.rotationSpeedY * deltaTime;
+        }
+
+        // Check interaction with player
+        if (item.position.x < 1 && item.position.x > -1) {
+            if (item.userData.type === "Bamboo") {
+                updateHealth(15);
+            } else if (item.userData.type === "Chocolate") {
+                updateHealth(-10);
+            }
+
+            scene.remove(item);
+            items.splice(i, 1);
+            continue;
+        }
+
+        // Despawn old items that move off-screen
+        if (item.position.x < -40) {
+            scene.remove(item);
+            items.splice(i, 1);
+        }
+    }
+}
+
+setInterval(() => {
+    if (!isPaused) {
+        spawnItem();
+    }
+}, Math.random() * 2000 + 1000); // Random interval between 1s and 3s
+
+// Move terrain and items
 function updateTerrain(deltaTime) {
     for (let i = terrainModels.length - 1; i >= 0; i--) {
         const terrain = terrainModels[i];
@@ -250,7 +312,9 @@ loader.load("Jump.glb", (gltf) => {
             if (jumpMixer) jumpMixer.update(deltaTime);
 
             updateTerrain(deltaTime);
+            updateItems(deltaTime); // Added spinning update here
             updateJump(deltaTime);
+
             renderer.render(scene, camera);
         }
         requestAnimationFrame(animate);
