@@ -22,8 +22,62 @@ function adjustCamera() {
     }
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    // Resize health and score display
+    const healthElement = document.getElementById('healthDisplay');
+    const scoreElement = document.getElementById('Score');
+    if (healthElement) {
+        healthElement.style.fontSize = window.innerWidth < 768 ? '14px' : '20px';
+    }
+    if (scoreElement) {
+        scoreElement.style.fontSize = window.innerWidth < 768 ? '14px' : '20px';
+    }
 }
+window.addEventListener('resize', adjustCamera);
 adjustCamera();
+
+// HTML Elements
+const scoreElement = document.getElementById('Score');
+const healthElement = document.getElementById('healthDisplay');
+const pauseMenu = document.getElementById('pauseMenu');
+
+let score = 0;
+let health = 100;
+let isPaused = false;
+
+// Update score every second
+setInterval(() => {
+    if (!isPaused) {
+        score += 1;
+        scoreElement.innerText = `Score: ${score}`;
+    }
+}, 1000);
+
+// Pause menu toggle
+function togglePause() {
+    isPaused = !isPaused;
+    pauseMenu.style.display = isPaused ? 'block' : 'none';
+}
+
+window.addEventListener('keydown', (event) => {
+    if (event.code === 'Escape') {
+        togglePause();
+    }
+});
+
+// Health display update
+function updateHealth(amount) {
+    health = Math.max(0, health + amount);
+    healthElement.innerText = `Health: ${health}`;
+}
+
+// Example: Decrease health over time
+setInterval(() => {
+    if (!isPaused) {
+        updateHealth(-1);
+    }
+}, 2000);
 
 // Lighting
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
@@ -49,6 +103,11 @@ createskybox();
 const loader = new GLTFLoader().setPath("Assets/3D objects/");
 let runningModel, jumpingModel, mixer, jumpMixer, runAction, jumpAction;
 const playerCenterDistance = 1;
+let jumpCount = 0;
+const maxJumps = 3;
+
+// Maximum jump height
+const maxJumpHeight = 3;
 
 // Load running animation
 loader.load("Running.glb", (gltf) => {
@@ -61,9 +120,11 @@ loader.load("Running.glb", (gltf) => {
 
     mixer = new THREE.AnimationMixer(runningModel);
     mixer.timeScale = 0.8;
-    runAction = mixer.clipAction(gltf.animations[0]);
-    runAction.loop = THREE.LoopRepeat;
-    runAction.play();
+    if (gltf.animations.length > 0) {
+        runAction = mixer.clipAction(gltf.animations[0]);
+        runAction.loop = THREE.LoopRepeat;
+        runAction.play();
+    }
 });
 
 // Load jumping animation
@@ -76,134 +137,87 @@ loader.load("Jump.glb", (gltf) => {
     scene.add(jumpingModel);
 
     jumpMixer = new THREE.AnimationMixer(jumpingModel);
-    jumpMixer.timeScale = 0.4;
-    jumpAction = jumpMixer.clipAction(gltf.animations[0]);
-    jumpAction.loop = THREE.LoopOnce;
-    jumpAction.clampWhenFinished = true;
+    jumpMixer.timeScale = 0.8;
+    if (gltf.animations.length > 0) {
+        jumpAction = jumpMixer.clipAction(gltf.animations[0]);
+        jumpAction.loop = THREE.LoopOnce;
+        jumpAction.clampWhenFinished = true;
+    }
 });
 
-// Health and score
-let health = 100;
-const healthDisplay = document.getElementById("healthDisplay");
-const scoreDisplay = document.getElementById("Score");
-
-// Doesn't work yet cu player doesnt have hitbox :)
-function updateHealth(amount) {
-    health -= amount; // Reduce health
-    health = Math.max(health, 0); // Prevent negative health
-    healthDisplay.innerText = `Health: ${health}`; // Update the displayed health
-    console.log(`Health: ${health}`); // Debugging log
-
-    if (health === 0) {
-        alert("Game Over!");
-        window.location.reload(); // Reload the page to restart the game
-    }
-}
-
-// Initialize Obstacle Manager
-const obstacleManager = new ObstacleManager(scene, runningModel, updateHealth);
-
-// Can use ammo.js and reright
 // Gravity, jump variables, and player movement
-const gravity = -0.008;
-const jumpForce = 0.2;
+const gravity = -0.02; // Adjusted for smoother jump curve
+const jumpForce = 0.3;  // Adjusted upward force for natural curve
 let velocityY = 0;
 let isJumping = false;
-let jumpStartTime = 0;
 const groundLevel = 1;
-
-// Game pause state
-let gamePaused = false;
 
 // Input event listener for jump
 window.addEventListener('keydown', (event) => {
-    if (event.code === 'Space' && !isJumping && !gamePaused) {
+    if (event.code === 'Space' && jumpCount < maxJumps) {
         isJumping = true;
         velocityY = jumpForce;
-        jumpStartTime = performance.now();
+        jumpCount++;
+
         runningModel.visible = false;
-
-        jumpingModel.position.set(runningModel.position.x, runningModel.position.y, runningModel.position.z);
+        jumpingModel.position.copy(runningModel.position);
         jumpingModel.visible = true;
-        jumpAction.reset().play();
-    }
-
-    if (event.code === 'Escape') {
-        gamePaused = !gamePaused;
-        togglePauseMenu();
+        if (jumpAction) jumpAction.reset().play();
     }
 });
 
-// Check landing function
 function checkLanding() {
     if (jumpingModel.position.y <= groundLevel && isJumping) {
         isJumping = false;
         velocityY = 0;
 
         jumpingModel.visible = false;
-        runningModel.position.set(jumpingModel.position.x, playerCenterDistance, jumpingModel.position.z);
+        runningModel.position.copy(jumpingModel.position);
         runningModel.visible = true;
-        runAction.reset().play();
+        if (runAction) runAction.reset().play();
+
+        if (jumpCount >= maxJumps) {
+            jumpCount = 0; // Reset jump count on landing if max jumps reached
+        }
     }
 }
 
-// Pause menu handling
-function togglePauseMenu() {
-    const pauseMenu = document.getElementById('pauseMenu');
-    if (gamePaused) {
-        pauseMenu.style.display = 'block';
-    } else {
-        pauseMenu.style.display = 'none';
-        animate();
-    }
-}
-
-let lastScoreUpdateTime = performance.now();
-let score = 0;
-
-// Animate function / Game loop
-function animate() {
-    if (gamePaused) return;
-    requestAnimationFrame(animate);
-
-    const currentTime = performance.now();
-    const deltaTime = (currentTime - lastScoreUpdateTime) / 1000;
-    score += deltaTime * 5;
-    lastScoreUpdateTime = currentTime;
-    scoreDisplay.innerText = `Score: ${Math.floor(score)}`;
-    
-
-    if (mixer) mixer.update(0.006);
-    if (jumpMixer) jumpMixer.update(0.006);
-
+// Update function to handle jumping
+function updateJump(deltaTime) {
     if (isJumping) {
-        const elapsedTime = performance.now() - jumpStartTime;
-        velocityY = elapsedTime < 200 ? velocityY + gravity : gravity;
+        velocityY += gravity * deltaTime; // Apply gravity
         jumpingModel.position.y += velocityY;
 
-        if (jumpingModel.position.y <= groundLevel) checkLanding();
+        // Clamp to maximum jump height smoothly
+        if (jumpingModel.position.y > maxJumpHeight) {
+            jumpingModel.position.y = maxJumpHeight;
+            velocityY = 0; // Stop upward motion when max height is reached
+        }
+
+        if (jumpingModel.position.y <= groundLevel) {
+            checkLanding(); // Trigger landing
+        }
     }
-
-    // Update obstacles
-    obstacleManager.update();
-    
-    renderer.render(scene, camera);
 }
 
-// Resize handling
-window.addEventListener('resize', () => {
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    adjustCamera();
-    adjustUITextSize();
-});
+// Integrate into game loop
+let lastFrameTime = performance.now();
+function animate() {
+    if (!isPaused) {
+        const currentTime = performance.now();
+        const deltaTime = (currentTime - lastFrameTime) / 1000;
+        lastFrameTime = currentTime;
 
-// Adjust UI text size
-function adjustUITextSize() {
-    const baseFontSize = window.innerWidth < 768 ? 5 : 2;
-    healthDisplay.style.fontSize = `${baseFontSize}vw`;
-    scoreDisplay.style.fontSize = `${baseFontSize}vw`;
+        // Update animation mixers
+        if (mixer) mixer.update(deltaTime);
+        if (jumpMixer) jumpMixer.update(deltaTime);
+
+        // Update jump mechanics
+        updateJump(deltaTime);
+
+        renderer.render(scene, camera);
+    }
+    requestAnimationFrame(animate);
 }
 
-// Initialize UI and start game
-adjustUITextSize();
 animate();

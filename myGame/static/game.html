@@ -23,6 +23,8 @@
             transform: translateX(-50%);
             text-align: center;
             color: white;
+            font-size: 1.5rem;
+            z-index: 100;
         ">
         Score: 0
     </div>
@@ -34,6 +36,7 @@
             left: 10px; 
             color: white; 
             font-size: 1.5rem;
+            z-index: 100;
         ">
         Health: 100
     </div>
@@ -51,7 +54,8 @@
             padding: 20px;
             border-radius: 10px;
             text-align: center;
-    ">
+            z-index: 200;
+        ">
         <p>Game Paused</p>
         <button onclick="window.location.href='index.html'">Home</button>
         <button onclick="restartGame()">Restart</button>
