@@ -51,8 +51,6 @@ const jumpForce = 0.2; // Reduced jump force for smoother physics
 const groundLevel = 1;
 
 let moveSpeed = 2; // Reduced movement speed for terrain
-let terrainSpawnInterval = 1; // Initial spawn interval
-let terrainSpawnTimer = 0;
 const minSpawnInterval = 0.5; // Minimum spawn interval to ensure stability
 
 const terrainModels = [];
@@ -63,9 +61,8 @@ setInterval(() => {
         score += 1;
         scoreElement.innerText = `Score: ${score}`;
 
-        // Gradual adjustment to speed and spawn rate
+        // Gradual adjustment to speed
         moveSpeed = Math.min(5, 2 + score * 0.05); // Gradual increase capped at 5
-        terrainSpawnInterval = Math.max(minSpawnInterval, 2.5 - score * 0.01); // Decrease spawn interval with a minimum limit
     }
 }, 1000);
 
@@ -123,7 +120,7 @@ function spawnTerrain(xPosition) {
     loader.load("Ter1.glb", (gltf) => {
         const terrainModel = gltf.scene.clone();
         terrainModel.scale.set(0.1, 0.1, 0.1);
-        terrainModel.position.set(xPosition, 1.35, -2);
+        terrainModel.position.set(xPosition, 1.35, -1.7);
         scene.add(terrainModel);
         terrainModels.push(terrainModel);
     });
@@ -135,8 +132,6 @@ spawnTerrain(10);
 
 // Move terrain
 function updateTerrain(deltaTime) {
-    terrainSpawnTimer += deltaTime;
-
     for (let i = terrainModels.length - 1; i >= 0; i--) {
         const terrain = terrainModels[i];
         terrain.position.x -= moveSpeed * deltaTime;
@@ -148,10 +143,15 @@ function updateTerrain(deltaTime) {
         }
     }
 
-    // Spawn new terrain periodically
-    if (terrainSpawnTimer >= terrainSpawnInterval) {
-        spawnTerrain(20); // Spawn a new terrain at 20 units
-        terrainSpawnTimer = 0; // Reset the timer
+    // Spawn new terrain when the last terrain reaches x=0
+    if (terrainModels.length > 0) {
+        const lastTerrain = terrainModels[terrainModels.length - 1];
+        if (lastTerrain.position.x <= 0) {
+            spawnTerrain(22);
+        }
+    } else {
+        // If no terrain exists, spawn one at the initial position
+        spawnTerrain(22);
     }
 }
 
