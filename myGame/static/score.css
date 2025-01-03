@@ -1,0 +1,109 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #00cc88;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+header {
+    background-color: white;
+    padding: 10px 0;
+    color: black;
+    text-align: center;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+header nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+header nav ul li {
+    margin: 0;
+}
+
+header nav ul li a {
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    background-color: #00cc88;
+    transition: background-color 0.3s ease;
+}
+
+header nav ul li a:hover {
+    background-color: #008f66;
+}
+
+.leaderboard {
+    background-color: white;
+    margin: 50px auto;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table th, table td {
+    text-align: left;
+    padding: 15px;
+    border: 1px solid #ddd;
+    word-wrap: break-word;
+    font-size: 16px;
+}
+
+table th {
+    background-color: #00cc88;
+    color: white;
+    text-align: center;
+}
+
+table th:nth-child(1), table td:nth-child(1) {
+    width: 20%;
+}
+
+table th:nth-child(2), table td:nth-child(2) {
+    width: 50%;
+}
+
+table th:nth-child(3), table td:nth-child(3) {
+    width: 30%;
+}
+
+button {
+    background-color: #00cc88;
+    color: white;
+    font-size: 16px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #008f66;
+}

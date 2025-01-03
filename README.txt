@@ -48,6 +48,7 @@ Contact: Narcis-Andrei.Tataranu@mail.bcu.ac.uk
 
 npm install bcrypt
 node myGame/app.js
+or
 node app.js
 
 paths:
