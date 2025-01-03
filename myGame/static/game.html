@@ -12,37 +12,8 @@
             font-family: Arial, sans-serif;
             background: black;
         }
-    </style>
-</head>
-<body>
-    <div id="Score"
-        style="
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            color: white;
-            font-size: 1.5rem;
-            z-index: 100;
-        ">
-        Score: 0
-    </div>
 
-    <div id="healthDisplay" 
-        style="
-            position: absolute; 
-            top: 10px; 
-            left: 10px; 
-            color: white; 
-            font-size: 1.5rem;
-            z-index: 100;
-        ">
-        Health: 100
-    </div>
-
-    <div id="gameOverOverlay" 
-        style="
+        #gameOverOverlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -51,20 +22,45 @@
             background-color: rgba(0, 0, 0, 0.8);
             color: white;
             display: none;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             font-size: 48px;
             z-index: 1000;
-        ">
-        <h1>Game Over</h1>
-        <div>
-            <button id="homePageButton" style="margin: 10px; padding: 10px 20px; font-size: 20px;">Home Page</button>
-            <button id="restartButton" style="margin: 10px; padding: 10px 20px; font-size: 20px;">Start Again</button>
-        </div>
-    </div>
+        }
 
-    <div id="pauseMenu" 
-        style="
+        #gameOverOverlay h1 {
+            margin-bottom: 20px;
+        }
+
+        #gameOverOverlay button {
+            display: block;
+            margin: 10px auto;
+            padding: 10px 20px;
+            font-size: 20px;
+        }
+
+        #Score {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: white;
+            font-size: 1.5rem;
+            z-index: 100;
+        }
+
+        #healthDisplay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-size: 1.5rem;
+            z-index: 100;
+        }
+
+        #pauseMenu {
             display: none;
             position: absolute;
             top: 30%;
@@ -77,7 +73,27 @@
             border-radius: 10px;
             text-align: center;
             z-index: 200;
-        ">
+        }
+    </style>
+</head>
+<body>
+    <div id="Score">
+        Score: 0
+    </div>
+
+    <div id="healthDisplay">
+        Health: 100
+    </div>
+
+    <div id="gameOverOverlay">
+        <h1>Game Over</h1>
+        <div>
+            <button id="homePageButton" onclick="goToHomePage()">Home Page</button>
+            <button id="restartButton" onclick="restartGame()">Start Again</button>
+        </div>
+    </div>
+
+    <div id="pauseMenu">
         <p>Game Paused</p>
         <button onclick="window.location.href='index.html'">Home</button>
         <button onclick="restartGame()">Restart</button>
@@ -96,6 +112,10 @@
     <script>
         function restartGame() {
             location.reload(); // Reload the page to restart the game
+        }
+
+        function goToHomePage() {
+            window.location.href = 'index.html'; // Navigate to the home page
         }
     </script>
 </body>
