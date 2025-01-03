@@ -80,6 +80,11 @@ setInterval(() => {
 function togglePause() {
     isPaused = !isPaused;
     pauseMenu.style.display = isPaused ? 'block' : 'none';
+
+    if (!isPaused) {
+        lastFrameTime = performance.now(); // Reset frame time to resume smoothly
+        animate(); // Resume the game loop
+    }
 }
 
 window.addEventListener('keydown', (event) => {
@@ -164,9 +169,9 @@ function checkCollisions() {
         const itemBoundingBox = new THREE.Box3().setFromObject(item);
         if (playerBoundingBox.intersectsBox(itemBoundingBox)) {
             if (item.userData.type === "Bamboo") {
-                updateHealth(10);
+                updateHealth(20); // Gain 20 health
             } else if (item.userData.type === "Chocolate") {
-                updateHealth(-40);
+                updateHealth(-40); // Lose 40 health
             }
             scene.remove(item);
             items.splice(i, 1);
@@ -306,18 +311,21 @@ function updateJump(deltaTime) {
 
 let lastFrameTime = performance.now();
 function animate() {
-    if (!isPaused) {
-        const currentTime = performance.now();
-        const deltaTime = (currentTime - lastFrameTime) / 1000;
-        lastFrameTime = currentTime;
-        if (mixer) mixer.update(deltaTime);
-        if (jumpMixer) jumpMixer.update(deltaTime);
-        updatePlayerBoundingBox();
-        updateTerrain(deltaTime);
-        updateItems(deltaTime);
-        updateJump(deltaTime);
-        renderer.render(scene, camera);
-    }
+    if (isPaused) return; // Completely stop the game if paused
+
+    const currentTime = performance.now();
+    const deltaTime = (currentTime - lastFrameTime) / 1000;
+    lastFrameTime = currentTime;
+
+    if (mixer) mixer.update(deltaTime);
+    if (jumpMixer) jumpMixer.update(deltaTime);
+    updatePlayerBoundingBox();
+    updateTerrain(deltaTime);
+    updateItems(deltaTime);
+    updateJump(deltaTime);
+    renderer.render(scene, camera);
+
     requestAnimationFrame(animate);
 }
+
 animate();
