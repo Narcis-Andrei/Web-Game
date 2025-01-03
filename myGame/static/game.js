@@ -11,9 +11,12 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 let isGameOver = false; // Track game over state
+let isPaused = false; // Track pause state
 
-// Adjust camera for different screen sizes
-function adjustCamera() {
+// Adjust camera and UI for different screen sizes
+function adjustCameraAndUI() {
+    if (isGameOver || isPaused) return; // Do not adjust camera if game is over or paused
+
     if (window.innerWidth < 768) { // For mobile view
         camera.fov = 75;
         camera.position.set(0, 2, 8);
@@ -28,15 +31,27 @@ function adjustCamera() {
     // Resize health and score display
     const healthElement = document.getElementById('healthDisplay');
     const scoreElement = document.getElementById('Score');
+    const pauseMenu = document.getElementById('pauseMenu');
+
     if (healthElement) {
-        healthElement.style.fontSize = window.innerWidth < 768 ? '14px' : '20px';
+        healthElement.style.fontSize = window.innerWidth < 480 ? '5vw' : window.innerWidth < 768 ? '4vw' : '20px';
     }
     if (scoreElement) {
-        scoreElement.style.fontSize = window.innerWidth < 768 ? '14px' : '20px';
+        scoreElement.style.fontSize = window.innerWidth < 480 ? '5vw' : window.innerWidth < 768 ? '4vw' : '20px';
+    }
+    if (pauseMenu) {
+        pauseMenu.style.fontSize = window.innerWidth < 480 ? '1.2rem' : window.innerWidth < 768 ? '1.5rem' : '2rem';
+        pauseMenu.style.padding = window.innerWidth < 480 ? '10px' : window.innerWidth < 768 ? '15px' : '20px';
+
+        const buttons = pauseMenu.querySelectorAll('button');
+        buttons.forEach(button => {
+            button.style.fontSize = window.innerWidth < 480 ? '0.8rem' : window.innerWidth < 768 ? '0.9rem' : '1rem';
+            button.style.padding = window.innerWidth < 480 ? '6px 12px' : window.innerWidth < 768 ? '8px 16px' : '10px 20px';
+        });
     }
 }
-window.addEventListener('resize', adjustCamera);
-adjustCamera();
+window.addEventListener('resize', adjustCameraAndUI);
+adjustCameraAndUI();
 
 // HTML Elements
 const scoreElement = document.getElementById('Score');
@@ -45,7 +60,6 @@ const pauseMenu = document.getElementById('pauseMenu');
 
 let score = 0;
 let health = 100;
-let isPaused = false;
 let isJumping = false;
 let velocityY = 0;
 const gravity = -1.5; // Reduced gravity for smoother jump
@@ -61,7 +75,7 @@ const items = []; // Array to store Bamboo and Chocolate items
 
 // Update score every second and increase item speed gradually
 setInterval(() => {
-    if (!isPaused) {
+    if (!isPaused && !isGameOver) {
         score += 1;
         scoreElement.innerText = `Score: ${score}`;
 
@@ -73,13 +87,15 @@ setInterval(() => {
 
 // Gradual health reduction
 setInterval(() => {
-    if (!isPaused) {
+    if (!isPaused && !isGameOver) {
         updateHealth(-5); // Decrease health by 5
     }
 }, 2000);
 
 // Pause menu toggle
 function togglePause() {
+    if (isGameOver) return; // Do not allow pause if game is over
+
     isPaused = !isPaused;
     pauseMenu.style.display = isPaused ? 'block' : 'none';
 
@@ -114,10 +130,9 @@ function updateHealth(amount) {
 }
 
 function freezeGame() {
+    // Stop everything by setting game over and pause to true
+    isPaused = true;
     console.log("Game is now frozen."); // Debugging info
-
-    // Disable the Escape key for the Pause menu
-    window.removeEventListener('keydown', handlePauseMenu);
 }
 
 // Lighting
@@ -216,7 +231,7 @@ function updateItems(deltaTime) {
 }
 
 setInterval(() => {
-    if (!isPaused) {
+    if (!isPaused && !isGameOver) {
         spawnItem();
     }
 }, Math.random() * 2000 + 1000);
