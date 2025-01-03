@@ -52,11 +52,12 @@ const groundLevel = 1;
 
 let moveSpeed = 2; // Reduced movement speed for terrain
 const minSpawnInterval = 0.5; // Minimum spawn interval to ensure stability
+let itemSpeed = 2; // Initial speed for Bamboo and Chocolate
 
 const terrainModels = [];
 const items = []; // Array to store Bamboo and Chocolate items
 
-// Update score every second
+// Update score every second and increase item speed gradually
 setInterval(() => {
     if (!isPaused) {
         score += 1;
@@ -64,8 +65,16 @@ setInterval(() => {
 
         // Gradual adjustment to speed
         moveSpeed = Math.min(5, 2 + score * 0.05); // Gradual increase capped at 5
+        itemSpeed = Math.min(10, itemSpeed + 0.1); // Gradually increase item speed capped at 10
     }
 }, 1000);
+
+// Gradual health reduction
+setInterval(() => {
+    if (!isPaused) {
+        updateHealth(-5); // Decrease health by 5
+    }
+}, 2000);
 
 // Pause menu toggle
 function togglePause() {
@@ -84,13 +93,6 @@ function updateHealth(amount) {
     health = Math.max(0, health + amount);
     healthElement.innerText = `Health: ${health}`;
 }
-
-// Example: Decrease health over time
-setInterval(() => {
-    if (!isPaused) {
-        updateHealth(-5);
-    }
-}, 2000);
 
 // Lighting
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
@@ -133,18 +135,15 @@ spawnTerrain(10);
 
 function spawnItem() {
     const itemType = Math.random() < 0.7 ? "Bamboo" : "Chocolate"; // Higher chance for Bamboo
-    const yPosition = Math.random() < 0.5 ? 4 : 5; // Updated to spawn at y=1 or y=5
-    const xPosition = 20; // Fixed x position for spawning
+    const yPosition = 5; // Spawn items at a height of 5
+    const zPosition = 0; // Align items to player's z-axis
+    const xPosition = 12; // Fixed x position for spawning
 
     loader.load(`${itemType}.glb`, (gltf) => {
         const item = gltf.scene.clone();
-        if (itemType === "Bamboo") {
-            item.scale.set(0.25, 0.25, 0.25); // Increase size for Bamboo
-        } else if (itemType === "Chocolate") {
-            item.scale.set(2, 2, 2); // Increase size for Chocolate
-        }
-        item.position.set(xPosition, yPosition, -1.7);
-        item.userData.type = itemType; // Store type for interaction
+        item.scale.set(itemType === "Bamboo" ? 0.25 : 2, itemType === "Bamboo" ? 0.25 : 2, itemType === "Bamboo" ? 0.25 : 2);
+        item.position.set(xPosition, yPosition, zPosition);
+        item.userData.type = itemType;
         scene.add(item);
         items.push(item);
     });
@@ -165,9 +164,9 @@ function checkCollisions() {
         const itemBoundingBox = new THREE.Box3().setFromObject(item);
         if (playerBoundingBox.intersectsBox(itemBoundingBox)) {
             if (item.userData.type === "Bamboo") {
-                updateHealth(15);
+                updateHealth(10);
             } else if (item.userData.type === "Chocolate") {
-                updateHealth(-10);
+                updateHealth(-40);
             }
             scene.remove(item);
             items.splice(i, 1);
@@ -179,8 +178,10 @@ function updateItems(deltaTime) {
     updatePlayerBoundingBox();
     for (let i = items.length - 1; i >= 0; i--) {
         const item = items[i];
-        item.position.x -= moveSpeed * deltaTime;
+        item.position.x -= itemSpeed * deltaTime; // Gradually increasing item speed
+
         checkCollisions();
+
         if (item.position.x < -40) {
             scene.remove(item);
             items.splice(i, 1);
@@ -221,7 +222,7 @@ function updateTerrain(deltaTime) {
 loader.load("Running.glb", (gltf) => {
     runningModel = gltf.scene;
     runningModel.scale.set(120, 120, 120);
-    runningModel.position.set(0, playerCenterDistance, 0);
+    runningModel.position.set(0, playerCenterDistance, 0); // Align with items on z-axis
     runningModel.rotation.y = Math.PI / 2;
     runningModel.visible = true;
     scene.add(runningModel);
@@ -232,12 +233,15 @@ loader.load("Running.glb", (gltf) => {
         runAction.loop = THREE.LoopRepeat;
         runAction.play();
     }
+
+    // Add hitbox for running model
+    updatePlayerBoundingBox();
 });
 
 loader.load("Jump.glb", (gltf) => {
     jumpingModel = gltf.scene;
     jumpingModel.scale.set(120, 120, 120);
-    jumpingModel.position.set(0, playerCenterDistance, 0);
+    jumpingModel.position.set(0, playerCenterDistance, 0); // Align with items on z-axis
     jumpingModel.rotation.y = Math.PI / 2;
     jumpingModel.visible = false;
     scene.add(jumpingModel);
@@ -274,6 +278,10 @@ loader.load("Jump.glb", (gltf) => {
             jumpingModel.visible = true;
 
             velocityY = jumpForce;
+
+            // Update player box helper for jumping model
+            playerModel = jumpingModel;
+            updatePlayerBoundingBox();
         }
     });
 });
@@ -288,6 +296,10 @@ function updateJump(deltaTime) {
             isJumping = false;
             runningModel.visible = true;
             jumpingModel.visible = false;
+
+            // Switch back to running model for box helper
+            playerModel = runningModel;
+            updatePlayerBoundingBox();
         }
     }
 }
