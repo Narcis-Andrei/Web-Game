@@ -95,7 +95,7 @@ function updateHealth(amount) {
 }
 
 // Lighting
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 4);
 scene.add(directionalLight);
 
 // Skybox
