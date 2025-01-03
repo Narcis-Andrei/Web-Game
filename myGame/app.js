@@ -48,42 +48,32 @@ app.post('/register', async (req, res) => {
   try {
       // Check if the email already exists
       const checkUserQuery = "SELECT * FROM user WHERE email = ?";
-      con.query(checkUserQuery, [email], async (err, results) => {
-          if (err) {
-              console.error("Error checking email:", err);
-              return res.status(500).send("Database error.");
-          }
-
-          if (results.length > 0) {
-              return res.send("<h2>Email already registered. Please <a href='/login'>log in</a> instead.</h2>");
+      con.query(checkUserQuery, [email], async (err, result) => {
+          if (err) throw err;
+          if (result.length > 0) {
+              return res.status(400).send("User already exists");
           }
 
           // Hash the password
           const hashedPassword = await bcrypt.hash(password, 10);
 
-          // Insert new user into the database
+          // Insert new user
           const insertUserQuery = "INSERT INTO user (name, email, password, score) VALUES (?, ?, ?, ?)";
           con.query(insertUserQuery, [name, email, hashedPassword, 0], (err, result) => {
-              if (err) {
-                  console.error("Error inserting user:", err);
-                  return res.status(500).send("Error saving the user to the database.");
-              }
-
-              console.log("User registered successfully:", result);
-              res.redirect('/login'); // Redirect to login page
+              if (err) throw err;
+              res.status(200).send("User registered successfully");
           });
       });
   } catch (error) {
-      console.error("Registration error:", error);
-      res.status(500).send("An error occurred during registration.");
+      res.status(500).send("Internal Server Error");
   }
 });
 
-
+// Handle Login
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
 
-  // Check if the email exists
+  // Check if the email exists in the database
   const checkUserQuery = "SELECT * FROM user WHERE email = ?";
   con.query(checkUserQuery, [email], async (err, results) => {
       if (err) {
@@ -104,7 +94,35 @@ app.post('/login', (req, res) => {
       }
 
       console.log("User logged in:", user.email);
-      return res.json({ success: true, message: "Login successful!" });
+      res.status(200).json({ success: true, message: "Login successful!", user: { id: user.ID, email: user.email, name: user.name, score: user.score, health: user.health } });
+  });
+});
+
+// Update Player Stats
+app.post('/update-stats', (req, res) => {
+  const { id, score, health } = req.body;
+
+  if (!id || score === undefined || health === undefined) {
+      return res.status(400).send("Missing parameters");
+  }
+
+  const updateStatsQuery = `
+      UPDATE user
+      SET score = GREATEST(score, ?), health = GREATEST(health, ?)
+      WHERE ID = ?;
+  `;
+
+  con.query(updateStatsQuery, [score, health, id], (err, result) => {
+      if (err) {
+          console.error("Error updating stats:", err);
+          return res.status(500).send("Internal Server Error");
+      }
+
+      if (result.affectedRows > 0) {
+          res.status(200).send("Player stats updated successfully");
+      } else {
+          res.status(404).send("Player not found");
+      }
   });
 });
 
@@ -113,7 +131,7 @@ app.use((req, res) => {
   res.status(404).sendFile(path.join(__dirname, 'static', '404.html'));
 });
 
-// Start Server
+// Start the server
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+  console.log(`Server running on http://localhost:${port}`);
 });

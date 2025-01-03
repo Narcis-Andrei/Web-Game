@@ -135,6 +135,43 @@ function freezeGame() {
     console.log("Game is now frozen."); // Debugging info
 }
 
+// Function to send player stats to the backend
+async function sendPlayerStats(playerId, highestScore, highestHealth) {
+    try {
+        const response = await fetch('http://localhost:3000/update-stats', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id: playerId,
+                score: highestScore,
+                health: highestHealth,
+            }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            console.log('Player stats updated successfully:', data.message);
+        } else {
+            console.error('Error updating player stats:', data.message || data.error);
+        }
+    } catch (error) {
+        console.error('Error sending player stats:', error);
+    }
+}
+
+// Example player ID (to be replaced with actual logged-in player ID)
+const playerId = 5;
+
+// Function to handle game over
+function gameOver() {
+    isGameOver = true;
+    console.log('Game Over');
+    sendPlayerStats(playerId, score, health); // Send the highest score and health to the backend
+}
+
 // Lighting
 const directionalLight = new THREE.DirectionalLight(0xffffff, 4);
 scene.add(directionalLight);
