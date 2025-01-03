@@ -10,6 +10,8 @@ renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+let isGameOver = false; // Track game over state
+
 // Adjust camera for different screen sizes
 function adjustCamera() {
     if (window.innerWidth < 768) { // For mobile view
@@ -88,7 +90,7 @@ function togglePause() {
 }
 
 window.addEventListener('keydown', (event) => {
-    if (event.code === 'Escape') {
+    if (event.code === 'Escape' && !isGameOver) {
         togglePause();
     }
 });
@@ -96,7 +98,26 @@ window.addEventListener('keydown', (event) => {
 // Health display update
 function updateHealth(amount) {
     health = Math.max(0, health + amount);
-    healthElement.innerText = `Health: ${health}`;
+    if (healthElement) {
+        healthElement.innerText = `Health: ${health}`;
+    }
+
+    // Show Game Over overlay if health is 0
+    if (health === 0 && !isGameOver) {
+        const gameOverOverlay = document.getElementById('gameOverOverlay');
+        if (gameOverOverlay) {
+            gameOverOverlay.style.display = 'flex'; // Show the overlay
+        }
+        isGameOver = true; // Set game over state
+        freezeGame();
+    }
+}
+
+function freezeGame() {
+    console.log("Game is now frozen."); // Debugging info
+
+    // Disable the Escape key for the Pause menu
+    window.removeEventListener('keydown', handlePauseMenu);
 }
 
 // Lighting
@@ -311,7 +332,7 @@ function updateJump(deltaTime) {
 
 let lastFrameTime = performance.now();
 function animate() {
-    if (isPaused) return; // Completely stop the game if paused
+    if (isPaused || isGameOver) return; // Completely stop the game if paused or game over
 
     const currentTime = performance.now();
     const deltaTime = (currentTime - lastFrameTime) / 1000;
