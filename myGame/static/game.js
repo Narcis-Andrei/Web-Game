@@ -136,41 +136,50 @@ function freezeGame() {
 }
 
 // Function to send player stats to the backend
-async function sendPlayerStats(playerId, highestScore, highestHealth) {
-    try {
-        const response = await fetch('http://localhost:3000/update-stats', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                id: playerId,
-                score: highestScore,
-                health: highestHealth,
-            }),
-        });
+async function sendHighestScore(currentScore) {
+    const playerId = localStorage.getItem('userId'); // Retrieve the logged-in user's ID
 
+    if (!playerId) {
+        console.error('Player ID not found. Ensure the user is logged in.');
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:3000/get-score?id=${playerId}`);
         const data = await response.json();
 
-        if (response.ok) {
-            console.log('Player stats updated successfully:', data.message);
+        if (!response.ok) {
+            console.error('Error fetching current score:', data.message);
+            return;
+        }
+
+        const existingScore = data.score;
+        const highestScore = Math.max(existingScore, currentScore); // Compare scores
+
+        // Update the database with the highest score
+        const updateResponse = await fetch('http://localhost:3000/update-score', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: playerId, score: highestScore }),
+        });
+
+        if (updateResponse.ok) {
+            console.log('Score updated successfully.');
         } else {
-            console.error('Error updating player stats:', data.message || data.error);
+            console.error('Failed to update the score.');
         }
     } catch (error) {
-        console.error('Error sending player stats:', error);
+        console.error('Error updating score:', error);
     }
 }
 
-// Example player ID (to be replaced with actual logged-in player ID)
-const playerId = 5;
-
-// Function to handle game over
 function gameOver() {
     isGameOver = true;
-    console.log('Game Over');
-    sendPlayerStats(playerId, score, health); // Send the highest score and health to the backend
+    console.log("Game Over");
+
+    sendHighestScore(score); // Send the current score to the backend
 }
+
 
 // Lighting
 const directionalLight = new THREE.DirectionalLight(0xffffff, 4);

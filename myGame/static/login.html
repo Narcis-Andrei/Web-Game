@@ -30,7 +30,6 @@
         <p id="errorMessage" style="color: red; display: none;">Invalid email or password!</p>
     </div>
 
-    <!-- JavaScript for handling login -->
     <script>
         document.getElementById("loginForm").addEventListener("submit", async function(event) {
             event.preventDefault(); // Prevent form from reloading the page
@@ -51,6 +50,9 @@
                 const data = await response.json();
 
                 if (response.ok && data.success) {
+                    // Save the user ID in localStorage
+                    localStorage.setItem("userId", data.userId);
+
                     alert("Login successful!");
                     window.location.href = "game.html"; // Redirect to the game page on success
                 } else {

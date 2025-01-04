@@ -73,55 +73,58 @@ app.post('/register', async (req, res) => {
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
 
-  // Check if the email exists in the database
   const checkUserQuery = "SELECT * FROM user WHERE email = ?";
   con.query(checkUserQuery, [email], async (err, results) => {
       if (err) {
           console.error(err);
-          return res.status(500).json({ success: false, message: "Server error. Please try again later." });
+          return res.status(500).json({ success: false, message: "Server error" });
       }
 
       if (results.length === 0) {
-          return res.status(401).json({ success: false, message: "Email not found. Please register." });
+          return res.status(401).json({ success: false, message: "Email not found" });
       }
 
-      // Compare the password with the hashed password
       const user = results[0];
       const passwordMatch = await bcrypt.compare(password, user.password);
 
       if (!passwordMatch) {
-          return res.status(401).json({ success: false, message: "Invalid password. Please try again." });
+          return res.status(401).json({ success: false, message: "Invalid password" });
       }
 
-      console.log("User logged in:", user.email);
-      res.status(200).json({ success: true, message: "Login successful!", user: { id: user.ID, email: user.email, name: user.name, score: user.score, health: user.health } });
+      return res.json({ success: true, message: "Login successful", userId: user.ID });
   });
 });
 
-// Update Player Stats
-app.post('/update-stats', (req, res) => {
-  const { id, score, health } = req.body;
 
-  if (!id || score === undefined || health === undefined) {
+// Update Player Stats
+app.post('/update-score', (req, res) => {
+  console.log("Request received at /update-score:", req.body); // Add this log
+
+  const { id, score } = req.body;
+
+  if (!id || score === undefined) {
+      console.error("Missing parameters");
       return res.status(400).send("Missing parameters");
   }
 
-  const updateStatsQuery = `
+  const query = `
       UPDATE user
-      SET score = GREATEST(score, ?), health = GREATEST(health, ?)
+      SET score = GREATEST(score, ?)
       WHERE ID = ?;
   `;
 
-  con.query(updateStatsQuery, [score, health, id], (err, result) => {
+  con.query(query, [score, id], (err, result) => {
       if (err) {
-          console.error("Error updating stats:", err);
+          console.error("Error updating score:", err);
           return res.status(500).send("Internal Server Error");
       }
 
+      console.log("Database update result:", result); // Add this log
+
       if (result.affectedRows > 0) {
-          res.status(200).send("Player stats updated successfully");
+          res.status(200).send("Score updated successfully");
       } else {
-          res.status(404).send("Player not found");
+          res.status(404).send("User not found");
       }
   });
 });
