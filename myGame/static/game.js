@@ -15,8 +15,6 @@ let isPaused = false; // Track pause state
 
 // Adjust camera and UI for different screen sizes
 function adjustCameraAndUI() {
-    if (isGameOver || isPaused) return; // Do not adjust camera if game is over or paused
-
     if (window.innerWidth < 768) { // For mobile view
         camera.fov = 75;
         camera.position.set(0, 2, 8);
@@ -49,7 +47,11 @@ function adjustCameraAndUI() {
             button.style.padding = window.innerWidth < 480 ? '6px 12px' : window.innerWidth < 768 ? '8px 16px' : '10px 20px';
         });
     }
+
+    // Force rendering during resize
+    renderer.render(scene, camera);
 }
+
 window.addEventListener('resize', adjustCameraAndUI);
 adjustCameraAndUI();
 
@@ -99,6 +101,9 @@ function togglePause() {
     isPaused = !isPaused;
     pauseMenu.style.display = isPaused ? 'block' : 'none';
 
+    // Call adjustCameraAndUI to resize the canvas/UI
+    adjustCameraAndUI();
+
     if (!isPaused) {
         lastFrameTime = performance.now(); // Reset frame time to resume smoothly
         animate(); // Resume the game loop
@@ -124,11 +129,14 @@ function updateHealth(amount) {
         if (gameOverOverlay) {
             gameOverOverlay.style.display = 'flex'; // Show the overlay
         }
-
+    
+        // Call adjustCameraAndUI to resize the canvas/UI
+        adjustCameraAndUI();
+    
         // Send the highest score before freezing the game
         console.log("Health is zero. Sending highest score...");
         sendHighestScore(score);
-
+    
         isGameOver = true; // Set game over state
         freezeGame();
     }
@@ -411,7 +419,11 @@ function updateJump(deltaTime) {
 
 let lastFrameTime = performance.now();
 function animate() {
-    if (isPaused || isGameOver) return; // Completely stop the game if paused or game over
+    if (isPaused || isGameOver) {
+        // Render a single frame to prevent a dark screen
+        renderer.render(scene, camera);
+        return;
+    }
 
     const currentTime = performance.now();
     const deltaTime = (currentTime - lastFrameTime) / 1000;

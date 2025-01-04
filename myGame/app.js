@@ -71,25 +71,26 @@ app.post('/register', async (req, res) => {
   try {
     const checkUserQuery = "SELECT * FROM user WHERE email = ?";
     con.query(checkUserQuery, [email], async (err, result) => {
-      if (err) throw err;
+      if (err) {
+        return res.status(500).json({ success: false, message: "Database error", details: err.message });
+      }
 
       if (result.length > 0) {
-        // Send JSON response for existing user
         return res.status(400).json({ success: false, message: "User already exists" });
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
       const insertUserQuery = "INSERT INTO user (name, email, password, score) VALUES (?, ?, ?, ?)";
       con.query(insertUserQuery, [name, email, hashedPassword, 0], (err, result) => {
-        if (err) throw err;
+        if (err) {
+          return res.status(500).json({ success: false, message: "Database error", details: err.message });
+        }
 
-        // Redirect to login page after successful registration
-        res.redirect('/login');
+        res.status(200).json({ success: true, message: "Registration successful" });
       });
     });
   } catch (error) {
-    console.error("Registration error:", error);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+    res.status(500).json({ success: false, message: "Unexpected error", details: error.message });
   }
 });
 

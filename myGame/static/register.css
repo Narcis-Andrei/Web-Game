@@ -83,3 +83,54 @@ body {
     display: none;
   }
   
+  @media (max-width: 768px) {
+    header nav ul {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    header nav ul li a {
+        font-size: 14px;
+        padding: 8px 15px;
+    }
+
+    .leaderboard {
+        padding: 20px;
+    }
+
+    table th, table td {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+/* Media Query for Mobile Devices */
+@media (max-width: 480px) {
+    header nav ul {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    header nav ul li a {
+        font-size: 14px;
+        padding: 8px 15px;
+    }
+
+    .leaderboard {
+        padding: 15px;
+    }
+
+    table th, table td {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    table th:nth-child(1), table td:nth-child(1),
+    table th:nth-child(3), table td:nth-child(3) {
+        width: 25%; /* Adjusted for smaller screens */
+    }
+
+    table th:nth-child(2), table td:nth-child(2) {
+        width: 50%;
+    }
+}
