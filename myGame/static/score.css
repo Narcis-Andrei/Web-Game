@@ -28,7 +28,8 @@ header nav ul {
     padding: 0;
     display: flex;
     justify-content: center;
-    gap: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
 header nav ul li {
@@ -37,17 +38,21 @@ header nav ul li {
 
 header nav ul li a {
     text-decoration: none;
-    color: black;
+    color: white;
     font-weight: bold;
     font-size: 16px;
     padding: 10px 20px;
-    border-radius: 5px;
+    border-radius: 25px;
     background-color: #00cc88;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: inline-block;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 header nav ul li a:hover {
     background-color: #008f66;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
 }
 
 .leaderboard {
@@ -106,4 +111,56 @@ button {
 
 button:hover {
     background-color: #008f66;
+}
+
+@media (max-width: 768px) {
+    header nav ul {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    header nav ul li a {
+        font-size: 14px;
+        padding: 8px 15px;
+    }
+
+    .leaderboard {
+        padding: 20px;
+    }
+
+    table th, table td {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+/* Media Query for Mobile Devices */
+@media (max-width: 480px) {
+    header nav ul {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    header nav ul li a {
+        font-size: 14px;
+        padding: 8px 15px;
+    }
+
+    .leaderboard {
+        padding: 15px;
+    }
+
+    table th, table td {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    table th:nth-child(1), table td:nth-child(1),
+    table th:nth-child(3), table td:nth-child(3) {
+        width: 25%; /* Adjusted for smaller screens */
+    }
+
+    table th:nth-child(2), table td:nth-child(2) {
+        width: 50%;
+    }
 }
