@@ -41,6 +41,29 @@ app.get('/game', (req, res) => {
   res.sendFile(path.join(__dirname, 'static', 'game.html'));
 });
 
+// Leaderboard API Endpoint
+app.get('/leaderboard', (req, res) => {
+  const query = `
+      SELECT name, score 
+      FROM cmp5360.user 
+      WHERE name IS NOT NULL AND score IS NOT NULL 
+      ORDER BY score DESC
+  `;
+
+  console.log("Executing query:", query);
+
+  con.query(query, (err, results) => {
+      if (err) {
+          console.error("Database query error:", err); // Log error
+          return res.status(500).json({ error: "Internal Server Error", details: err.message });
+      }
+
+      console.log("Query results:", results); // Log successful results
+      res.json(results); // Send JSON response
+  });
+});
+
+
 // Handle Registration
 app.post('/register', async (req, res) => {
   const { name, email, password } = req.body;

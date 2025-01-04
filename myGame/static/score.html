@@ -28,25 +28,39 @@
                         <th>Score</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>123</td>
-                        <td>27</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>12345</td>
-                        <td>16</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>1234</td>
-                        <td>15</td>
-                    </tr>
+                <tbody id="leaderboard-body">
+                    <!-- Leaderboard data will be dynamically inserted here -->
                 </tbody>
             </table>
         </section>
     </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/leaderboard')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json(); // Parse JSON only if response is OK
+                })
+                .then(data => {
+                    const tbody = document.getElementById('leaderboard-body');
+                    tbody.innerHTML = '';
+                    data.forEach((player, index) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${player.name}</td>
+                            <td>${player.score}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading leaderboard:', error); // Log detailed error
+                    alert('Failed to load leaderboard. Please try again later.');
+                });
+        });
+    </script>
 </body>
 </html>
