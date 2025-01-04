@@ -46,26 +46,23 @@ app.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
-      // Check if the email already exists
-      const checkUserQuery = "SELECT * FROM user WHERE email = ?";
-      con.query(checkUserQuery, [email], async (err, result) => {
-          if (err) throw err;
-          if (result.length > 0) {
-              return res.status(400).send("User already exists");
-          }
+    const checkUserQuery = "SELECT * FROM user WHERE email = ?";
+    con.query(checkUserQuery, [email], async (err, result) => {
+      if (err) throw err;
+      if (result.length > 0) {
+        return res.status(400).send("User already exists");
+      }
 
-          // Hash the password
-          const hashedPassword = await bcrypt.hash(password, 10);
-
-          // Insert new user
-          const insertUserQuery = "INSERT INTO user (name, email, password, score) VALUES (?, ?, ?, ?)";
-          con.query(insertUserQuery, [name, email, hashedPassword, 0], (err, result) => {
-              if (err) throw err;
-              res.status(200).send("User registered successfully");
-          });
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const insertUserQuery = "INSERT INTO user (name, email, password, score) VALUES (?, ?, ?, ?)";
+      con.query(insertUserQuery, [name, email, hashedPassword, 0], (err, result) => {
+        if (err) throw err;
+        res.status(200).send("User registered successfully");
       });
+    });
   } catch (error) {
-      res.status(500).send("Internal Server Error");
+    console.error("Registration error:", error);
+    res.status(500).send("Internal Server Error");
   }
 });
 
@@ -75,57 +72,81 @@ app.post('/login', (req, res) => {
 
   const checkUserQuery = "SELECT * FROM user WHERE email = ?";
   con.query(checkUserQuery, [email], async (err, results) => {
+    if (err) {
+      console.error("Login error:", err);
+      return res.status(500).json({ success: false, message: "Server error" });
+    }
+
+    if (results.length === 0) {
+      return res.status(401).json({ success: false, message: "Email not found" });
+    }
+
+    const user = results[0];
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
+    if (!passwordMatch) {
+      return res.status(401).json({ success: false, message: "Invalid password" });
+    }
+
+    console.log(`User logged in: ${user.ID}`);
+    return res.json({ success: true, message: "Login successful", userId: user.ID });
+  });
+});
+
+// Get Current Score for Player
+app.get('/get-score', (req, res) => {
+  const { id } = req.query;
+
+  if (!id) {
+      console.error("Missing player ID");
+      return res.status(400).json({ success: false, message: "Missing player ID" });
+  }
+
+  const query = "SELECT score FROM user WHERE ID = ?";
+  con.query(query, [id], (err, results) => {
       if (err) {
-          console.error(err);
+          console.error("Error fetching score:", err);
           return res.status(500).json({ success: false, message: "Server error" });
       }
 
       if (results.length === 0) {
-          return res.status(401).json({ success: false, message: "Email not found" });
+          return res.status(404).json({ success: false, message: "Player not found" });
       }
 
-      const user = results[0];
-      const passwordMatch = await bcrypt.compare(password, user.password);
-
-      if (!passwordMatch) {
-          return res.status(401).json({ success: false, message: "Invalid password" });
-      }
-
-      return res.json({ success: true, message: "Login successful", userId: user.ID });
+      res.json({ success: true, score: results[0].score });
   });
 });
 
-
 // Update Player Stats
 app.post('/update-score', (req, res) => {
-  console.log("Request received at /update-score:", req.body); // Add this log
+  console.log("Request received at /update-score:", req.body);
 
   const { id, score } = req.body;
 
-  if (!id || score === undefined) {
-      console.error("Missing parameters");
-      return res.status(400).send("Missing parameters");
+  if (!id || score == null) {
+    console.error("Missing parameters");
+    return res.status(400).send("Missing parameters");
   }
 
   const query = `
-      UPDATE user
-      SET score = GREATEST(score, ?)
-      WHERE ID = ?;
+    UPDATE user
+    SET score = GREATEST(score, ?)
+    WHERE ID = ?;
   `;
 
   con.query(query, [score, id], (err, result) => {
-      if (err) {
-          console.error("Error updating score:", err);
-          return res.status(500).send("Internal Server Error");
-      }
+    if (err) {
+      console.error("Error updating score:", err);
+      return res.status(500).send("Internal Server Error");
+    }
 
-      console.log("Database update result:", result); // Add this log
+    console.log("Database update result:", result);
 
-      if (result.affectedRows > 0) {
-          res.status(200).send("Score updated successfully");
-      } else {
-          res.status(404).send("User not found");
-      }
+    if (result.affectedRows > 0) {
+      res.status(200).send("Score updated successfully");
+    } else {
+      res.status(404).send("User not found");
+    }
   });
 });
 

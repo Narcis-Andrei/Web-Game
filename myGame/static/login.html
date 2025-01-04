@@ -50,10 +50,12 @@
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    // Save the user ID in localStorage
+                    alert("Login successful!");
+
+                    // Store the userId in localStorage
+                    console.log("Logged-in User ID:", data.userId); // Debug log
                     localStorage.setItem("userId", data.userId);
 
-                    alert("Login successful!");
                     window.location.href = "game.html"; // Redirect to the game page on success
                 } else {
                     // Display error message

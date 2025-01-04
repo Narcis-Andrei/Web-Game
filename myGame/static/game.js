@@ -124,6 +124,11 @@ function updateHealth(amount) {
         if (gameOverOverlay) {
             gameOverOverlay.style.display = 'flex'; // Show the overlay
         }
+
+        // Send the highest score before freezing the game
+        console.log("Health is zero. Sending highest score...");
+        sendHighestScore(score);
+
         isGameOver = true; // Set game over state
         freezeGame();
     }
@@ -137,24 +142,31 @@ function freezeGame() {
 
 // Function to send player stats to the backend
 async function sendHighestScore(currentScore) {
-    const playerId = localStorage.getItem('userId'); // Retrieve the logged-in user's ID
+    const playerId = localStorage.getItem('userId');
+    console.log("Logged-in Player ID (from localStorage):", playerId);
 
     if (!playerId) {
-        console.error('Player ID not found. Ensure the user is logged in.');
+        console.error("Player ID not found. Ensure the user is logged in.");
         return;
     }
 
     try {
+        // Fetch the current score
         const response = await fetch(`http://localhost:3000/get-score?id=${playerId}`);
-        const data = await response.json();
-
+        
         if (!response.ok) {
-            console.error('Error fetching current score:', data.message);
+            console.error("Failed to fetch current score. Status:", response.status, response.statusText);
+            const text = await response.text(); // Log the error page content
+            console.error("Response text:", text);
             return;
         }
 
+        const data = await response.json();
+
         const existingScore = data.score;
-        const highestScore = Math.max(existingScore, currentScore); // Compare scores
+        const highestScore = Math.max(existingScore, currentScore);
+
+        console.log("Current Score:", currentScore, "Existing Score:", existingScore, "Highest Score:", highestScore);
 
         // Update the database with the highest score
         const updateResponse = await fetch('http://localhost:3000/update-score', {
@@ -163,11 +175,14 @@ async function sendHighestScore(currentScore) {
             body: JSON.stringify({ id: playerId, score: highestScore }),
         });
 
-        if (updateResponse.ok) {
-            console.log('Score updated successfully.');
-        } else {
-            console.error('Failed to update the score.');
+        if (!updateResponse.ok) {
+            console.error("Failed to update the score. Status:", updateResponse.status, updateResponse.statusText);
+            const text = await updateResponse.text();
+            console.error("Response text:", text);
+            return;
         }
+
+        console.log('Score updated successfully.');
     } catch (error) {
         console.error('Error updating score:', error);
     }
@@ -177,9 +192,12 @@ function gameOver() {
     isGameOver = true;
     console.log("Game Over");
 
+    // Debug: Log the player ID and score
+    console.log("Player ID:", localStorage.getItem('userId'));
+    console.log("Final Score:", score);
+
     sendHighestScore(score); // Send the current score to the backend
 }
-
 
 // Lighting
 const directionalLight = new THREE.DirectionalLight(0xffffff, 4);
