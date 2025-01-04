@@ -3,13 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loading</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="loading.js" defer></script>
+    <title>Loading Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #121212;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        #loading-text {
+            font-size: 1.5rem;
+        }
+    </style>
 </head>
 <body>
-    <div id="loading">
-        <p id="loading-text">Loading game assets, please wait...</p>
-    </div>
+    <div id="loading-text">Loading game assets...</div>
+    <script src="loading.js"></script>
 </body>
 </html>

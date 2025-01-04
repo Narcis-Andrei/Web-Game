@@ -57,7 +57,8 @@
                     console.log("Logged-in User ID:", data.userId); // Debug log
                     localStorage.setItem("userId", data.userId);
 
-                    window.location.href = "game.html"; // Redirect to the game page on success
+                    // Redirect to the loading page
+                    window.location.href = "loadGamePage.html";
                 } else {
                     // Display error message
                     errorMessage.textContent = data.message || "Invalid email or password!";
