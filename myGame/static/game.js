@@ -26,7 +26,20 @@ function adjustCameraAndUI() {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 
-    // Resize health and score display
+    // Adjust Game Over screen
+    const gameOverOverlay = document.getElementById('gameOverOverlay');
+    if (gameOverOverlay) {
+        gameOverOverlay.style.fontSize = window.innerWidth < 480 ? '3vw' : window.innerWidth < 768 ? '2.5vw' : '1.5rem';
+        gameOverOverlay.style.padding = window.innerWidth < 480 ? '10px' : window.innerWidth < 768 ? '20px' : '30px';
+
+        const buttons = gameOverOverlay.querySelectorAll('button');
+        buttons.forEach(button => {
+            button.style.fontSize = window.innerWidth < 480 ? '0.8rem' : window.innerWidth < 768 ? '1rem' : '1.2rem';
+            button.style.padding = window.innerWidth < 480 ? '8px 16px' : window.innerWidth < 768 ? '10px 20px' : '12px 24px';
+        });
+    }
+
+    // Other UI adjustments (score, health, etc.)
     const healthElement = document.getElementById('healthDisplay');
     const scoreElement = document.getElementById('Score');
     const pauseMenu = document.getElementById('pauseMenu');
