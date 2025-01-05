@@ -99,14 +99,6 @@ audioLoader.load("/Assets/Sound/Music2.mp3", (buffer) => {
     sounds.backgroundMusic2.play();
 });
 
-// Play next background music when the first finishes
-sounds.backgroundMusic1.onEnded = () => {
-    sounds.backgroundMusic2.play();
-    sounds.backgroundMusic2.onEnded = () => {
-        sounds.backgroundMusic1.play();
-    };
-};
-
 // Load Game Over sound
 audioLoader.load("/Assets/Sound/GameOver.mp3", (buffer) => {
     sounds.gameOverSound.setBuffer(buffer);
@@ -125,7 +117,7 @@ audioLoader.load("/Assets/Sound/Ough.mp3", (buffer) => {
     sounds.oughSound.setVolume(1.0);
 });
 
-// Event listener to start audio user interaction
+// Event listener to start audio after user interaction
 document.body.addEventListener("click", () => {
     if (!sounds.backgroundMusic1.isPlaying) {
         sounds.backgroundMusic1.play();
@@ -133,7 +125,6 @@ document.body.addEventListener("click", () => {
     if (!sounds.backgroundMusic2.isPlaying) {
         sounds.backgroundMusic2.play();
     }
-    console.log("Audio playback started after user interaction.");
 }, { once: true });
 
 // Particle generation function
@@ -378,7 +369,7 @@ spawnTerrain(-10);
 spawnTerrain(10);
 
 function spawnItem() {
-    const itemType = Math.random() < 0.5 ? "Bamboo" : "Chocolate";
+    const itemType = Math.random() < 0.6 ? "Bamboo" : "Chocolate";
     const yPosition = 5; // Spawn items at a height of 5
     const zPosition = 0; // Align items to player's z-axis
     const xPosition = 12; // Fixed x position for spawning
@@ -412,11 +403,11 @@ function checkCollisions() {
             const itemPosition = item.position.clone();
             if (item.userData.type === "Bamboo") {
                 sounds.nomSound.play(); // Play Nom sound
-                updateHealth(20); // Gain 20 health
+                updateHealth(10); // Gain 10 health
                 createParticles(itemPosition, 0x00ff00); // Green particles
             } else if (item.userData.type === "Chocolate") {
                 sounds.oughSound.play(); // Play Ough sound
-                updateHealth(-40); // Lose 40 health
+                updateHealth(-60); // Lose 60 health
                 createParticles(itemPosition, 0xff0000); // Red particles
             }
             scene.remove(item);
