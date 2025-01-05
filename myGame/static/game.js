@@ -241,7 +241,7 @@ const createskybox = () => {
 createskybox();
 
 // GLTFLoader initialization
-const loader = new GLTFLoader().setPath("Assets/3D objects/");
+const loader = new GLTFLoader().setPath("Assets/3D_objects/");
 let runningModel, jumpingModel, mixer, jumpMixer, runAction, jumpAction;
 const playerCenterDistance = 1;
 
