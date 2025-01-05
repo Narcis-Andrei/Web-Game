@@ -81,63 +81,6 @@ a:hover {
 
 /*404 Page*/
 
-
-/*Log in page Page*/
-.login-container {
-    background: white;
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    width: 300px;
-}
-
-.input-group {
-    margin-bottom: 15px;
-    margin-top: 25px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.input-group label {
-    display: block;
-    margin-bottom: 5px;
-}
-
-.input-group input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    text-align: left;
-}
-
-.options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-button:hover {
-    background: #00cc88;
-}
-
-.register {
-    margin-top: 20px;
-}
-
-.register a {
-    color: #00ffaa;
-    text-decoration: none;
-}
-
-.register a:hover {
-    text-decoration: underline;
-}
-/*Log in page Page*/
-
 /*Responsive Resizing*/
 @media (max-width: 768px) {
     h1 {

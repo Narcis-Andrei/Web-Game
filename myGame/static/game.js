@@ -68,6 +68,114 @@ function adjustCameraAndUI() {
 window.addEventListener('resize', adjustCameraAndUI);
 adjustCameraAndUI();
 
+// Add Audio Listener to Camera
+const listener = new THREE.AudioListener();
+camera.add(listener);
+
+// Load Audio Files
+const audioLoader = new THREE.AudioLoader();
+
+const sounds = {
+    backgroundMusic1: new THREE.Audio(listener),
+    backgroundMusic2: new THREE.Audio(listener),
+    gameOverSound: new THREE.Audio(listener),
+    nomSound: new THREE.Audio(listener),
+    oughSound: new THREE.Audio(listener),
+};
+
+// Load and play Music.mp3
+audioLoader.load("/Assets/Sound/Music.mp3", (buffer) => {
+    sounds.backgroundMusic1.setBuffer(buffer);
+    sounds.backgroundMusic1.setLoop(true);
+    sounds.backgroundMusic1.setVolume(0.5);
+    sounds.backgroundMusic1.play();
+});
+
+// Load and play Music2.mp3
+audioLoader.load("/Assets/Sound/Music2.mp3", (buffer) => {
+    sounds.backgroundMusic2.setBuffer(buffer);
+    sounds.backgroundMusic2.setLoop(true);
+    sounds.backgroundMusic2.setVolume(0.5);
+    sounds.backgroundMusic2.play();
+});
+
+// Play next background music when the first finishes
+sounds.backgroundMusic1.onEnded = () => {
+    sounds.backgroundMusic2.play();
+    sounds.backgroundMusic2.onEnded = () => {
+        sounds.backgroundMusic1.play();
+    };
+};
+
+// Load Game Over sound
+audioLoader.load("/Assets/Sound/GameOver.mp3", (buffer) => {
+    sounds.gameOverSound.setBuffer(buffer);
+    sounds.gameOverSound.setVolume(1.0);
+});
+
+// Load Nom sound
+audioLoader.load("/Assets/Sound/Nom.mp3", (buffer) => {
+    sounds.nomSound.setBuffer(buffer);
+    sounds.nomSound.setVolume(1.0);
+});
+
+// Load Ough sound
+audioLoader.load("/Assets/Sound/Ough.mp3", (buffer) => {
+    sounds.oughSound.setBuffer(buffer);
+    sounds.oughSound.setVolume(1.0);
+});
+
+// Event listener to start audio user interaction
+document.body.addEventListener("click", () => {
+    if (!sounds.backgroundMusic1.isPlaying) {
+        sounds.backgroundMusic1.play();
+    }
+    if (!sounds.backgroundMusic2.isPlaying) {
+        sounds.backgroundMusic2.play();
+    }
+    console.log("Audio playback started after user interaction.");
+}, { once: true });
+
+// Particle generation function
+function createParticles(position, color) {
+    const particleCount = 85;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+
+    for (let i = 0; i < particleCount; i++) {
+        positions[i * 3] = position.x + Math.random() - 0.5; // x
+        positions[i * 3 + 1] = position.y + Math.random() - 0.5; // y
+        positions[i * 3 + 2] = position.z + Math.random() - 0.5; // z
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    const material = new THREE.PointsMaterial({
+        color: color,
+        size: 0.2,
+        transparent: true,
+        opacity: 0.5,
+    });
+
+    const particles = new THREE.Points(geometry, material);
+    scene.add(particles);
+
+    // Animate particles and remove them
+    let duration = 1.5; // in seconds
+    let elapsed = 0;
+
+    function animateParticles(deltaTime) {
+        elapsed += deltaTime;
+        if (elapsed > duration) {
+            scene.remove(particles);
+            return;
+        }
+        material.opacity = Math.max(0, material.opacity - deltaTime / duration);
+        requestAnimationFrame(() => animateParticles(0.016));
+    }
+    animateParticles(0.016);
+}
+
 // HTML Elements
 const scoreElement = document.getElementById('Score');
 const healthElement = document.getElementById('healthDisplay');
@@ -209,15 +317,25 @@ async function sendHighestScore(currentScore) {
     }
 }
 
+// Game Over logic
 function gameOver() {
+    if (isGameOver) return;
     isGameOver = true;
+    
     console.log("Game Over");
 
-    // Debug: Log the player ID and score
-    console.log("Player ID:", localStorage.getItem('userId'));
-    console.log("Final Score:", score);
+    // Play Game Over sound
+    if (!sounds.gameOverSound.isPlaying) {
+        sounds.gameOverSound.play();
+        console.log("Game Over sound played.");
+    } else {
+        console.log("Game Over sound is already playing.");
+    }
 
-    sendHighestScore(score); // Send the current score to the backend
+    const gameOverOverlay = document.getElementById('gameOverOverlay');
+    if (gameOverOverlay) {
+        gameOverOverlay.style.display = 'flex';
+    }
 }
 
 // Lighting
@@ -260,7 +378,7 @@ spawnTerrain(-10);
 spawnTerrain(10);
 
 function spawnItem() {
-    const itemType = Math.random() < 0.7 ? "Bamboo" : "Chocolate"; // Higher chance for Bamboo
+    const itemType = Math.random() < 0.5 ? "Bamboo" : "Chocolate";
     const yPosition = 5; // Spawn items at a height of 5
     const zPosition = 0; // Align items to player's z-axis
     const xPosition = 12; // Fixed x position for spawning
@@ -269,6 +387,7 @@ function spawnItem() {
         const item = gltf.scene.clone();
         item.scale.set(itemType === "Bamboo" ? 0.25 : 2, itemType === "Bamboo" ? 0.25 : 2, itemType === "Bamboo" ? 0.25 : 2);
         item.position.set(xPosition, yPosition, zPosition);
+        item.rotation.set(145, 120, 70)
         item.userData.type = itemType;
         scene.add(item);
         items.push(item);
@@ -284,15 +403,21 @@ function updatePlayerBoundingBox() {
     }
 }
 
+// Collision
 function checkCollisions() {
     for (let i = items.length - 1; i >= 0; i--) {
         const item = items[i];
         const itemBoundingBox = new THREE.Box3().setFromObject(item);
         if (playerBoundingBox.intersectsBox(itemBoundingBox)) {
+            const itemPosition = item.position.clone();
             if (item.userData.type === "Bamboo") {
+                sounds.nomSound.play(); // Play Nom sound
                 updateHealth(20); // Gain 20 health
+                createParticles(itemPosition, 0x00ff00); // Green particles
             } else if (item.userData.type === "Chocolate") {
+                sounds.oughSound.play(); // Play Ough sound
                 updateHealth(-40); // Lose 40 health
+                createParticles(itemPosition, 0xff0000); // Red particles
             }
             scene.remove(item);
             items.splice(i, 1);
@@ -433,9 +558,8 @@ function updateJump(deltaTime) {
 let lastFrameTime = performance.now();
 function animate() {
     if (isPaused || isGameOver) {
-        // Render a single frame to prevent a dark screen
         renderer.render(scene, camera);
-        return;
+        return; // Stop further animation
     }
 
     const currentTime = performance.now();
