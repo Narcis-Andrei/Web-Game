@@ -22,7 +22,7 @@ con.connect(function (err) {
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'static'))); // Serve static files
+app.use(express.static(path.join(__dirname, 'static')));
 
 // Routes
 app.get('/', (req, res) => {
@@ -41,7 +41,7 @@ app.get('/game', (req, res) => {
   res.sendFile(path.join(__dirname, 'static', 'game.html'));
 });
 
-// Leaderboard API Endpoint
+// Leaderboard API endpoint
 app.get('/leaderboard', (req, res) => {
   const query = `
       SELECT name, score 
@@ -54,17 +54,17 @@ app.get('/leaderboard', (req, res) => {
 
   con.query(query, (err, results) => {
       if (err) {
-          console.error("Database query error:", err); // Log error
+          console.error("Database query error:", err);
           return res.status(500).json({ error: "Internal Server Error", details: err.message });
       }
 
-      console.log("Query results:", results); // Log successful results
-      res.json(results); // Send JSON response
+      console.log("Query results:", results);
+      res.json(results);
   });
 });
 
 
-// Handle Registration
+// Registration
 app.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -94,7 +94,7 @@ app.post('/register', async (req, res) => {
   }
 });
 
-// Handle Login
+// Login
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
 
@@ -121,7 +121,7 @@ app.post('/login', (req, res) => {
   });
 });
 
-// Get Current Score for Player
+// Currect player score
 app.get('/get-score', (req, res) => {
   const { id } = req.query;
 
@@ -145,7 +145,7 @@ app.get('/get-score', (req, res) => {
   });
 });
 
-// Update Player Stats
+// PLayer score
 app.post('/update-score', (req, res) => {
   console.log("Request received at /update-score:", req.body);
 
@@ -178,7 +178,7 @@ app.post('/update-score', (req, res) => {
   });
 });
 
-// 404 Route
+// 404 route
 app.use((req, res) => {
   res.status(404).sendFile(path.join(__dirname, 'static', '404.html'));
 });
