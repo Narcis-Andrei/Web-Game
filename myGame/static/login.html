@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="login.css">
 </head>
 <body>
+    <!-- Leaderboard Navigation at the Top -->
     <div class="navbar">
         <a href="index.html" class="nav-btn">Home</a>
         <a href="score.html" class="nav-btn">Leaderboard</a>
@@ -38,7 +39,7 @@
 
     <script>
         document.getElementById("loginForm").addEventListener("submit", async function(event) {
-            event.preventDefault();
+            event.preventDefault(); // Prevent form from reloading the page
             
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
@@ -59,12 +60,13 @@
                     alert("Login successful!");
 
                     // Store the userId in localStorage
+                    console.log("Logged-in User ID:", data.userId); // Debug log
                     localStorage.setItem("userId", data.userId);
 
-                    // Redirect to loading page
+                    // Redirect to the loading page
                     window.location.href = "loadGamePage.html";
                 } else {
-                    // Error message
+                    // Display error message
                     errorMessage.textContent = data.message || "Invalid email or password!";
                     errorMessage.style.display = "block";
                 }

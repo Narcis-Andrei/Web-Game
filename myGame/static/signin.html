@@ -30,7 +30,7 @@
     const errorMessage = document.getElementById("errorMessage");
 
     registerForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
+      event.preventDefault(); // Prevent default form submission
 
       const formData = new FormData(registerForm);
       const formObject = Object.fromEntries(formData.entries());
@@ -47,18 +47,17 @@
         const result = await response.json();
 
         if (response.ok && result.success) {
-          // Redirect to login page after registration
+          // Redirect to login page on successful registration
           window.location.href = "login.html";
         } else {
-          // Error message if registration is wrong
+          // Display error message if registration fails
           errorMessage.textContent = result.message || "An unexpected error occurred.";
-          errorMessage.style.display = "block"; 
+          errorMessage.style.display = "block"; // Show the error message
         }
-        // Errors
       } catch (error) {
         console.error("Error during registration:", error);
         errorMessage.textContent = "An unexpected error occurred. Please try again.";
-        errorMessage.style.display = "block";
+        errorMessage.style.display = "block"; // Show the error message
       }
     });
   </script>

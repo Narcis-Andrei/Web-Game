@@ -29,6 +29,7 @@
                     </tr>
                 </thead>
                 <tbody id="leaderboard-body">
+                    <!-- Leaderboard data will be dynamically inserted here -->
                 </tbody>
             </table>
         </section>
@@ -40,7 +41,7 @@
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                    return response.json();
+                    return response.json(); // Parse JSON only if response is OK
                 })
                 .then(data => {
                     const tbody = document.getElementById('leaderboard-body');
@@ -55,9 +56,8 @@
                         tbody.appendChild(row);
                     });
                 })
-                // Errors
                 .catch(error => {
-                    console.error('Error loading leaderboard:', error);
+                    console.error('Error loading leaderboard:', error); // Log detailed error
                     alert('Failed to load leaderboard. Please try again later.');
                 });
         });

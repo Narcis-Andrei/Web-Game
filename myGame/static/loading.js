@@ -15,7 +15,7 @@ const assets = [
 let assetsLoaded = 0;
 const totalAssets = assets.length;
 
-// Load an image
+// Function to load an image
 function loadImage(src) {
     return new Promise((resolve, reject) => {
         console.log(`Loading image: ${src}`);
@@ -34,18 +34,18 @@ function loadImage(src) {
     });
 }
 
-// Load GLTF file
+// Function to load GLTF files
 function loadGLTF(src) {
     return new Promise((resolve, reject) => {
         console.log(`Loading GLTF: ${src}`);
-        const loader = new GLTFLoader();
+        const loader = new GLTFLoader(); // Use imported GLTFLoader
         loader.load(
             src,
             (gltf) => {
                 assetsLoaded++;
                 updateLoadingProgress();
                 console.log(`Loaded GLTF successfully: ${src}`);
-                resolve(gltf);
+                resolve(gltf); // Pass the loaded GLTF model
             },
             undefined,
             (error) => {
@@ -56,18 +56,18 @@ function loadGLTF(src) {
     });
 }
 
-// Determine asset type and load correctly
+// Function to determine asset type and load accordingly
 function loadAsset(src) {
     if (src.endsWith('.glb')) {
-        return loadGLTF(src); // GLTFLoader for .glb files
+        return loadGLTF(src); // Use GLTFLoader for .glb files
     } else if (src.endsWith('.png') || src.endsWith('.jpg') || src.endsWith('.jpeg')) {
-        return loadImage(src); // Image for texture files
+        return loadImage(src); // Use Image for texture files
     } else {
         return Promise.reject(new Error(`Unsupported asset type: ${src}`));
     }
 }
 
-// Update loading progress on screen
+// Function to update loading progress on the screen
 function updateLoadingProgress() {
     const loadingText = document.getElementById("loading-text");
     loadingText.textContent = `Loading game assets: ${assetsLoaded}/${totalAssets}...`;
@@ -76,10 +76,9 @@ function updateLoadingProgress() {
     }
 }
 
-// Load all game assets and redirect to game page
+// Function to load all game assets and redirect to the game page
 async function loadGameAssets() {
-     // Show initial progress
-    updateLoadingProgress();
+    updateLoadingProgress(); // Show initial progress
 
     try {
         // Load each asset and handle errors
@@ -92,7 +91,7 @@ async function loadGameAssets() {
             )
         );
 
-        // Redirect to game page once all assets are loaded
+        // Redirect to the game page once all assets are loaded
         window.location.href = "game.html";
     } catch (error) {
         console.error("Error loading assets:", error);
@@ -101,4 +100,5 @@ async function loadGameAssets() {
     }
 }
 
+// Start loading assets
 loadGameAssets();
