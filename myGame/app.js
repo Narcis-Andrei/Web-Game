@@ -22,7 +22,7 @@ con.connect(function (err) {
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'static'))); // Serve static files
+app.use(express.static(path.join(__dirname, 'static')));
 
 // Routes
 app.get('/', (req, res) => {
@@ -54,12 +54,12 @@ app.get('/leaderboard', (req, res) => {
 
   con.query(query, (err, results) => {
       if (err) {
-          console.error("Database query error:", err); // Log error
+          console.error("Database query error:", err);
           return res.status(500).json({ error: "Internal Server Error", details: err.message });
       }
 
-      console.log("Query results:", results); // Log successful results
-      res.json(results); // Send JSON response
+      console.log("Query results:", results);
+      res.json(results);
   });
 });
 

@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from 'https://unpkg.com/three@0.169.0/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from "https://unpkg.com/three@0.169.0/examples/jsm/loaders/GLTFLoader.js";
 
-// Scene, camera, and renderer setup
+// Scene, camera, and renderer
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -10,12 +10,12 @@ renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-let isGameOver = false; // Track game over state
-let isPaused = false; // Track pause state
+let isGameOver = false; // Track game over
+let isPaused = false; // Track pause
 
-// Adjust camera and UI for different screen sizes
+// Adjust camera and UI
 function adjustCameraAndUI() {
-    if (window.innerWidth < 768) { // For mobile view
+    if (window.innerWidth < 768) {
         camera.fov = 75;
         camera.position.set(0, 2, 8);
     } else {
@@ -26,7 +26,7 @@ function adjustCameraAndUI() {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 
-    // Adjust Game Over screen
+    // Adjust game over screen
     const gameOverOverlay = document.getElementById('gameOverOverlay');
     if (gameOverOverlay) {
         gameOverOverlay.style.fontSize = window.innerWidth < 480 ? '3vw' : window.innerWidth < 768 ? '2.5vw' : '1.5rem';
@@ -39,7 +39,7 @@ function adjustCameraAndUI() {
         });
     }
 
-    // Other UI adjustments (score, health, etc.)
+    // UI adjustments
     const healthElement = document.getElementById('healthDisplay');
     const scoreElement = document.getElementById('Score');
     const pauseMenu = document.getElementById('pauseMenu');
@@ -61,14 +61,13 @@ function adjustCameraAndUI() {
         });
     }
 
-    // Force rendering during resize
     renderer.render(scene, camera);
 }
 
 window.addEventListener('resize', adjustCameraAndUI);
 adjustCameraAndUI();
 
-// Add Audio Listener to Camera
+// Audio Listener to camera
 const listener = new THREE.AudioListener();
 camera.add(listener);
 
@@ -83,7 +82,7 @@ const sounds = {
     oughSound: new THREE.Audio(listener),
 };
 
-// Load and play Music.mp3
+// Load and play sound
 audioLoader.load("/Assets/Sound/Music.mp3", (buffer) => {
     sounds.backgroundMusic1.setBuffer(buffer);
     sounds.backgroundMusic1.setLoop(true);
@@ -91,7 +90,6 @@ audioLoader.load("/Assets/Sound/Music.mp3", (buffer) => {
     sounds.backgroundMusic1.play();
 });
 
-// Load and play Music2.mp3
 audioLoader.load("/Assets/Sound/Music2.mp3", (buffer) => {
     sounds.backgroundMusic2.setBuffer(buffer);
     sounds.backgroundMusic2.setLoop(true);
@@ -99,19 +97,16 @@ audioLoader.load("/Assets/Sound/Music2.mp3", (buffer) => {
     sounds.backgroundMusic2.play();
 });
 
-// Load Game Over sound
 audioLoader.load("/Assets/Sound/GameOver.mp3", (buffer) => {
     sounds.gameOverSound.setBuffer(buffer);
     sounds.gameOverSound.setVolume(1.0);
 });
 
-// Load Nom sound
 audioLoader.load("/Assets/Sound/Nom.mp3", (buffer) => {
     sounds.nomSound.setBuffer(buffer);
     sounds.nomSound.setVolume(1.0);
 });
 
-// Load Ough sound
 audioLoader.load("/Assets/Sound/Ough.mp3", (buffer) => {
     sounds.oughSound.setBuffer(buffer);
     sounds.oughSound.setVolume(1.0);
@@ -127,7 +122,7 @@ document.body.addEventListener("click", () => {
     }
 }, { once: true });
 
-// Particle generation function
+// Generate particles
 function createParticles(position, color) {
     const particleCount = 85;
     const geometry = new THREE.BufferGeometry();
@@ -151,8 +146,8 @@ function createParticles(position, color) {
     const particles = new THREE.Points(geometry, material);
     scene.add(particles);
 
-    // Animate particles and remove them
-    let duration = 1.5; // in seconds
+    // Animate particles
+    let duration = 1.5;
     let elapsed = 0;
 
     function animateParticles(deltaTime) {
@@ -176,49 +171,50 @@ let score = 0;
 let health = 100;
 let isJumping = false;
 let velocityY = 0;
-const gravity = -1.5; // Reduced gravity for smoother jump
-const jumpForce = 0.2; // Reduced jump force for smoother physics
+const gravity = -1.5;
+const jumpForce = 0.2;
 const groundLevel = 1;
 
-let moveSpeed = 2; // Reduced movement speed for terrain
-const minSpawnInterval = 0.5; // Minimum spawn interval to ensure stability
-let itemSpeed = 2; // Initial speed for Bamboo and Chocolate
+// Terrain and spawnables
+let moveSpeed = 2;
+const minSpawnInterval = 0.5;
+let itemSpeed = 2;
 
 const terrainModels = [];
-const items = []; // Array to store Bamboo and Chocolate items
+const items = [];
 
-// Update score every second and increase item speed gradually
+// Update score and increase item speed
 setInterval(() => {
     if (!isPaused && !isGameOver) {
         score += 1;
         scoreElement.innerText = `Score: ${score}`;
 
-        // Gradual adjustment to speed
-        moveSpeed = Math.min(5, 2 + score * 0.05); // Gradual increase capped at 5
-        itemSpeed = Math.min(10, itemSpeed + 0.1); // Gradually increase item speed capped at 10
+        // Increase in speed
+        moveSpeed = Math.min(10, 2 + score * 0.05);
+        itemSpeed = Math.min(20, itemSpeed + 0.1);
     }
 }, 1000);
 
-// Gradual health reduction
+// Decrease health
 setInterval(() => {
     if (!isPaused && !isGameOver) {
-        updateHealth(-5); // Decrease health by 5
+        updateHealth(-5);
     }
 }, 2000);
 
-// Pause menu toggle
+// Pause menu
 function togglePause() {
-    if (isGameOver) return; // Do not allow pause if game is over
+    if (isGameOver) return;
 
     isPaused = !isPaused;
     pauseMenu.style.display = isPaused ? 'block' : 'none';
 
-    // Call adjustCameraAndUI to resize the canvas/UI
+    // Resize the UI
     adjustCameraAndUI();
 
     if (!isPaused) {
-        lastFrameTime = performance.now(); // Reset frame time to resume smoothly
-        animate(); // Resume the game loop
+        lastFrameTime = performance.now();
+        animate(); // Resume game loop
     }
 }
 
@@ -228,25 +224,24 @@ window.addEventListener('keydown', (event) => {
     }
 });
 
-// Health display update
+// Health display
 function updateHealth(amount) {
     health = Math.max(0, health + amount);
     if (healthElement) {
         healthElement.innerText = `Health: ${health}`;
     }
 
-    // Show Game Over overlay if health is 0
+    // Game Over if health is 0
     if (health === 0 && !isGameOver) {
         const gameOverOverlay = document.getElementById('gameOverOverlay');
         if (gameOverOverlay) {
-            gameOverOverlay.style.display = 'flex'; // Show the overlay
+            gameOverOverlay.style.display = 'flex';
         }
     
-        // Call adjustCameraAndUI to resize the canvas/UI
+        // Resize the UI
         adjustCameraAndUI();
     
         // Send the highest score before freezing the game
-        console.log("Health is zero. Sending highest score...");
         sendHighestScore(score);
     
         isGameOver = true; // Set game over state
@@ -255,28 +250,25 @@ function updateHealth(amount) {
 }
 
 function freezeGame() {
-    // Stop everything by setting game over and pause to true
+    // Stop everything if game over and pause are true
     isPaused = true;
-    console.log("Game is now frozen."); // Debugging info
 }
 
-// Function to send player stats to the backend
+// Send player stats to the backend
 async function sendHighestScore(currentScore) {
     const playerId = localStorage.getItem('userId');
-    console.log("Logged-in Player ID (from localStorage):", playerId);
 
     if (!playerId) {
-        console.error("Player ID not found. Ensure the user is logged in.");
         return;
     }
 
     try {
-        // Fetch the current score
+        // Get current score
         const response = await fetch(`http://localhost:3000/get-score?id=${playerId}`);
         
         if (!response.ok) {
             console.error("Failed to fetch current score. Status:", response.status, response.statusText);
-            const text = await response.text(); // Log the error page content
+            const text = await response.text();
             console.error("Response text:", text);
             return;
         }
@@ -286,9 +278,7 @@ async function sendHighestScore(currentScore) {
         const existingScore = data.score;
         const highestScore = Math.max(existingScore, currentScore);
 
-        console.log("Current Score:", currentScore, "Existing Score:", existingScore, "Highest Score:", highestScore);
-
-        // Update the database with the highest score
+        // Send high score to database
         const updateResponse = await fetch('http://localhost:3000/update-score', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -302,20 +292,19 @@ async function sendHighestScore(currentScore) {
             return;
         }
 
-        console.log('Score updated successfully.');
     } catch (error) {
         console.error('Error updating score:', error);
     }
 }
 
-// Game Over logic
+// Game over logic
 function gameOver() {
     if (isGameOver) return;
     isGameOver = true;
     
     console.log("Game Over");
 
-    // Play Game Over sound
+    // Play game over sound
     if (!sounds.gameOverSound.isPlaying) {
         sounds.gameOverSound.play();
         console.log("Game Over sound played.");
@@ -349,7 +338,7 @@ const createskybox = () => {
 };
 createskybox();
 
-// GLTFLoader initialization
+// GLTFLoader
 const loader = new GLTFLoader().setPath("Assets/3D_objects/");
 let runningModel, jumpingModel, mixer, jumpMixer, runAction, jumpAction;
 const playerCenterDistance = 1;
@@ -364,15 +353,15 @@ function spawnTerrain(xPosition) {
     });
 }
 
-// Spawn initial terrain
+// Spawn terrain at start
 spawnTerrain(-10);
 spawnTerrain(10);
 
 function spawnItem() {
     const itemType = Math.random() < 0.6 ? "Bamboo" : "Chocolate";
-    const yPosition = 5; // Spawn items at a height of 5
-    const zPosition = 0; // Align items to player's z-axis
-    const xPosition = 12; // Fixed x position for spawning
+    const yPosition = 5;
+    const zPosition = 0;
+    const xPosition = 12;
 
     loader.load(`${itemType}.glb`, (gltf) => {
         const item = gltf.scene.clone();
@@ -385,6 +374,7 @@ function spawnItem() {
     });
 }
 
+// Hitbox
 let playerBoundingBox = new THREE.Box3();
 let playerModel = runningModel || jumpingModel;
 
@@ -402,13 +392,13 @@ function checkCollisions() {
         if (playerBoundingBox.intersectsBox(itemBoundingBox)) {
             const itemPosition = item.position.clone();
             if (item.userData.type === "Bamboo") {
-                sounds.nomSound.play(); // Play Nom sound
-                updateHealth(10); // Gain 10 health
-                createParticles(itemPosition, 0x00ff00); // Green particles
+                sounds.nomSound.play();
+                updateHealth(10);
+                createParticles(itemPosition, 0x00ff00);
             } else if (item.userData.type === "Chocolate") {
-                sounds.oughSound.play(); // Play Ough sound
-                updateHealth(-60); // Lose 60 health
-                createParticles(itemPosition, 0xff0000); // Red particles
+                sounds.oughSound.play();
+                updateHealth(-60);
+                createParticles(itemPosition, 0xff0000);
             }
             scene.remove(item);
             items.splice(i, 1);
@@ -420,7 +410,7 @@ function updateItems(deltaTime) {
     updatePlayerBoundingBox();
     for (let i = items.length - 1; i >= 0; i--) {
         const item = items[i];
-        item.position.x -= itemSpeed * deltaTime; // Gradually increasing item speed
+        item.position.x -= itemSpeed * deltaTime;
 
         checkCollisions();
 
@@ -449,14 +439,14 @@ function updateTerrain(deltaTime) {
         }
     }
 
-    // Spawn new terrain when the last terrain reaches x=0
+    // Spawn new terrain when the previous terrain reaches 0
     if (terrainModels.length > 0) {
         const lastTerrain = terrainModels[terrainModels.length - 1];
         if (lastTerrain.position.x <= 0) {
             spawnTerrain(22);
         }
     } else {
-        // If no terrain exists, spawn one at the initial position
+        // If no terrain exists, spawn one
         spawnTerrain(22);
     }
 }
@@ -464,7 +454,7 @@ function updateTerrain(deltaTime) {
 loader.load("Running.glb", (gltf) => {
     runningModel = gltf.scene;
     runningModel.scale.set(120, 120, 120);
-    runningModel.position.set(0, playerCenterDistance, 0); // Align with items on z-axis
+    runningModel.position.set(0, playerCenterDistance, 0);
     runningModel.rotation.y = Math.PI / 2;
     runningModel.visible = true;
     scene.add(runningModel);
@@ -476,14 +466,13 @@ loader.load("Running.glb", (gltf) => {
         runAction.play();
     }
 
-    // Add hitbox for running model
     updatePlayerBoundingBox();
 });
 
 loader.load("Jump.glb", (gltf) => {
     jumpingModel = gltf.scene;
     jumpingModel.scale.set(120, 120, 120);
-    jumpingModel.position.set(0, playerCenterDistance, 0); // Align with items on z-axis
+    jumpingModel.position.set(0, playerCenterDistance, 0);
     jumpingModel.rotation.y = Math.PI / 2;
     jumpingModel.visible = false;
     scene.add(jumpingModel);
@@ -521,7 +510,7 @@ loader.load("Jump.glb", (gltf) => {
 
             velocityY = jumpForce;
 
-            // Update player box helper for jumping model
+            // Update player hitbox for jumping model
             playerModel = jumpingModel;
             updatePlayerBoundingBox();
         }
@@ -539,7 +528,7 @@ function updateJump(deltaTime) {
             runningModel.visible = true;
             jumpingModel.visible = false;
 
-            // Switch back to running model for box helper
+            // Switch back to running model for hitbox
             playerModel = runningModel;
             updatePlayerBoundingBox();
         }
@@ -550,7 +539,7 @@ let lastFrameTime = performance.now();
 function animate() {
     if (isPaused || isGameOver) {
         renderer.render(scene, camera);
-        return; // Stop further animation
+        return;
     }
 
     const currentTime = performance.now();
