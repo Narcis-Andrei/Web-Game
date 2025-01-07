@@ -86,6 +86,32 @@ Some key points I achieved:
 -------------------------------------------------------------------------------------------------------------------
 
 -------------------------------------------------------------------------------------------------------------------
+References: 
+https://stackoverflow.com/questions/52385027/why-and-when-asynchronous-code-is-non-blocking
+https://stackoverflow.com/questions/72048929/javascript-run-callback-after-all-fetch-requests-to-finish-in-multiple-for-loo
+https://www.youtube.com/watch?v=fAeTptQ69eg
+https://www.youtube.com/watch?v=OFpqvaJ3QYg
+https://www.w3schools.com/jsref/met_audio_play.asp
+https://www.geeksforgeeks.org/javascript-play-a-mp3-file-in-js/
+https://www.w3schools.com/sql/
+https://www.geeksforgeeks.org/sql-tutorial/
+https://www.youtube.com/watch?v=HXV3zeQKqGY
+https://threejs.org/docs/#examples/en/loaders/GLTFLoader
+https://en.threejs-university.com/2021/08/04/loading-a-3d-glb-gltf-with-three-js-gltfloader/
+https://www.youtube.com/watch?v=yPA2z7fl4J8
+https://threejs.org/docs/#api/en/loaders/ImageLoader
+https://threejs.org/manual/#en/textures
+https://en.threejs-university.com/2021/08/03/chapter-5-creating-textures-with-three-js-the-basics/
+https://stackoverflow.com/questions/42454942/how-to-create-colision-detection-with-3d-objects
+https://stackoverflow.com/questions/48381967/three-js-collision-detection
+https://www.youtube.com/watch?v=IG95gd5WRrg
+https://www.youtube.com/watch?v=_MyPLZSGS3s
+https://www.w3schools.com/js/js_asynchronous.asp
+https://www.w3schools.com/Js/js_async.asp
+https://coderspacket.com/posts/play-audio-after-page-load-in-javascript-4/#google_vignette
+-------------------------------------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------------------------------------
 Contact: Narcis-Andrei.Tataranu@mail.bcu.ac.uk
 -------------------------------------------------------------------------------------------------------------------
 
